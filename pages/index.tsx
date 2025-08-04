@@ -1,6 +1,7 @@
 import Head from 'next/head'
 // import Image from 'next/image'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { useEffect, useState } from 'react'
 // import styles from '@styles/Home.module.css'
 
 const geistSans = Geist({
@@ -14,6 +15,19 @@ const geistMono = Geist_Mono({
 })
 
 export default function Home() {
+  const [data, setData] = useState<{ _id: string; message: string }[] | null>(null)
+
+  useEffect(() => {
+    fetch(process.env.NEXT_PUBLIC_HOST + '/about')
+      .then((res) => res.json())
+      .then((d) => {
+        if (d?.length) {
+          setData(d)
+        }
+      })
+      .catch((error) => {})
+  }, [])
+
   return (
     <>
       <Head>
@@ -27,9 +41,19 @@ export default function Home() {
         className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
       >
       </div> */}
-      <p>
-        Host: {process.env.NEXT_PUBLIC_HOST}
-      </p>
+      <p>Host: {process.env.NEXT_PUBLIC_HOST}</p>
+
+      {!data ? (
+        <div>Nothing to say</div>
+      ) : (
+        <div>
+          <ul>
+            {data.map(({ _id, message }) => (
+              <li key={_id}>{message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   )
 }
