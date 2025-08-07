@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { useEffect, useState } from 'react'
 // import styles from '@styles/Home.module.css'
 
+import { api } from '@shared/api/api'
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -18,8 +20,9 @@ export default function Home() {
   const [data, setData] = useState<{ _id: string; message: string }[] | null>(null)
 
   useEffect(() => {
-    fetch(process.env.NEXT_PUBLIC_HOST + '/about')
-      .then((res) => res.json())
+    api
+      .get('/about')
+      .then((res) => res.data)
       .then((d) => {
         if (d?.length) {
           setData(d)
