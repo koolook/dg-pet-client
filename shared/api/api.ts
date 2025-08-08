@@ -1,5 +1,5 @@
 import axios, { AxiosAdapter, AxiosError } from 'axios'
-import { cacheAdapterEnhancer } from 'axios-extensions'
+// import { cacheAdapterEnhancer } from 'axios-extensions'
 
 import { TOKEN_KEY } from '@shared/lib/hooks/useSession'
 
@@ -8,10 +8,10 @@ export const api = axios.create({
   headers: {
     'Cache-Control': 'no-cache',
   },
-  adapter: cacheAdapterEnhancer(axios.defaults.adapter as AxiosAdapter, {
-    enabledByDefault: false,
-    cacheFlag: 'useCache',
-  }),
+  // adapter: cacheAdapterEnhancer(axios.defaults.adapter as AxiosAdapter, {
+  //   enabledByDefault: false,
+  //   cacheFlag: 'useCache',
+  // }),
   timeout: 22000,
   withCredentials: true,
 })
