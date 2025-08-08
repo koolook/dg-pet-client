@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 // import Image from 'next/image'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { useEffect, useState } from 'react'
-// import styles from '@styles/Home.module.css'
 
 import { api } from '@shared/api/api'
 import useSession from '@shared/lib/hooks/useSession'
@@ -37,11 +36,10 @@ export default function Home() {
         })
         .catch((error) => {})
     }
-
   }, [])
 
   if (!session.isAuthorized) {
-    return null;
+    return null
   }
 
   return (
