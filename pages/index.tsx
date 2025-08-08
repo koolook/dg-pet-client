@@ -26,18 +26,23 @@ export default function Home() {
   useEffect(() => {
     if (!session.isAuthorized) {
       router.push('/login')
+    } else {
+      api
+        .get('/about')
+        .then((res) => res.data)
+        .then((d) => {
+          if (d?.length) {
+            setData(d)
+          }
+        })
+        .catch((error) => {})
     }
 
-    api
-      .get('/about')
-      .then((res) => res.data)
-      .then((d) => {
-        if (d?.length) {
-          setData(d)
-        }
-      })
-      .catch((error) => {})
   }, [])
+
+  if (!session.isAuthorized) {
+    return null;
+  }
 
   return (
     <>
