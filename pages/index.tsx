@@ -1,10 +1,12 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 // import Image from 'next/image'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { useEffect, useState } from 'react'
 // import styles from '@styles/Home.module.css'
 
 import { api } from '@shared/api/api'
+import useSession from '@shared/lib/hooks/useSession'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,8 +20,14 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const [data, setData] = useState<{ _id: string; message: string }[] | null>(null)
+  const session = useSession()
+  const router = useRouter()
 
   useEffect(() => {
+    if (!session.isAuthorized) {
+      router.push('/login')
+    }
+
     api
       .get('/about')
       .then((res) => res.data)

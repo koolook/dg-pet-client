@@ -1,7 +1,7 @@
 import axios, { AxiosAdapter, AxiosError } from 'axios'
 import { cacheAdapterEnhancer } from 'axios-extensions'
 
-const TOKEN = process.env.JWT_TOKEN || 'jsonWebToken'
+import { TOKEN_KEY } from '@shared/lib/hooks/useSession'
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_HOST_API,
@@ -18,8 +18,8 @@ export const api = axios.create({
 
 api.interceptors.request.use((config: any) => {
   if (typeof window !== 'undefined') {
-    if (localStorage.getItem(TOKEN)) {
-      config.headers.Authorization = 'Bearer ' + localStorage.getItem(TOKEN)
+    if (localStorage.getItem(TOKEN_KEY)) {
+      config.headers.Authorization = 'Bearer ' + localStorage.getItem(TOKEN_KEY)
     }
 
     if (localStorage.getItem('language')) {
