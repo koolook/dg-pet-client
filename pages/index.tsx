@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 
 import { api } from '@shared/api/api'
 import useSession from '@shared/lib/hooks/useSession'
+import { Button } from 'react-bootstrap'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,14 +19,12 @@ const geistMono = Geist_Mono({
 })
 
 export default function Home() {
-  const [data, setData] = useState<{ _id: string; message: string }[] | null>(null)
+  const [data, setData] = useState<{ _id: string; text: string }[] | null>(null)
   const session = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!session.isAuthorized) {
-      router.push('/login')
-    } else {
+    if (session.isAuthorized) {
       api
         .get('/about')
         .then((res) => res.data)
@@ -36,10 +35,10 @@ export default function Home() {
         })
         .catch((error) => {})
     }
-  }, [])
+  }, [session.isAuthorized])
 
   if (!session.isAuthorized) {
-    return null
+    return <div>Loading...</div>
   }
 
   return (
@@ -51,10 +50,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1>Pet Client</h1>
-      {/* <div
-        className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
-      >
-      </div> */}
       <p>Host: {process.env.NEXT_PUBLIC_HOST}</p>
 
       {!data ? (
@@ -62,11 +57,22 @@ export default function Home() {
       ) : (
         <div>
           <ul>
-            {data.map(({ _id, message }) => (
-              <li key={_id}>{message}</li>
+            {data.map(({ _id, text }) => (
+              <li key={_id}>{text}</li>
             ))}
           </ul>
         </div>
+      )}
+      {session.isAuthorized && (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            session.logoff()
+            router.push('/')
+          }}
+        >
+          Logoff
+        </Button>
       )}
     </>
   )

@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import StoreProvider from '@providers/StoreProvider'
-import '@styles/globals.css'
-import type { AppProps } from 'next/app'
 import { useEffect } from 'react'
+import type { AppProps } from 'next/app'
+
+import StoreProvider from '@providers/StoreProvider'
+import StartupWidget from '@widgets/startup'
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -13,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <StoreProvider>
+      <StartupWidget />
       <Component {...pageProps} />
     </StoreProvider>
   )

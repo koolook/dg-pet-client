@@ -1,11 +1,84 @@
-import { Button } from 'react-bootstrap'
+import { api } from '@shared/api/api'
+import useSession from '@shared/lib/hooks/useSession'
+import { FormEvent, useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import Alert from 'react-bootstrap/Alert'
+import { useRouter } from 'next/router'
+
+interface ILoginResponse {
+  token: string
+  id: string
+  roles: string[]
+}
 
 const loginForm = () => {
+  const session = useSession()
+  const router = useRouter()
+  const [userId, setUserId] = useState('')
+  const [password, setPassword] = useState('')
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    console.log(`user: ${userId} password: ${password}`)
+    setPending(true)
+    api
+      .post<ILoginResponse>('/auth/login', { login: userId.trim(), password })
+      .then((res) => {
+        const { token, id, roles } = res.data
+        session.login(token, { id, roles })
+        router.push('/')
+      })
+      .catch((error) => {
+        setPending(false)
+        setError(error.toJSON())
+      })
+  }
   return (
-    <>
-      <h1>Login will be here</h1>
-      <Button variant="primary">Click Me</Button>
-    </>
+    <div className="vh-100 d-flex align-items-center">
+      <div className="border border-primary col-lg-6 col-11 p-3 m-auto">
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="formUserId">
+            <Form.Label>User ID</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter User ID"
+              value={userId}
+              disabled={pending}
+              onChange={(e) => setUserId(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              value={password}
+              disabled={pending}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+          {pending ? (
+            <Button variant="primary" type="submit" disabled>
+              <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Loading...</span>
+            </Button>
+          ) : (
+            <Button variant="primary" type="submit">
+              <span>Submit</span>
+            </Button>
+          )}
+        </Form>
+        {error && (
+          <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
+            error
+          </Alert>
+        )}
+      </div>
+    </div>
   )
 }
 

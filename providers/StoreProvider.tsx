@@ -29,7 +29,7 @@ function reducer(state: State, action: Action): State {
         token,
         userData: { id, roles },
       } = action.payload
-      return { ...state, token, userId: id, userRoles: roles }
+      return { ...state, isAuthorized: true, token, userId: id, userRoles: roles }
 
     // case 'load_user':
     //     return { ...state }
