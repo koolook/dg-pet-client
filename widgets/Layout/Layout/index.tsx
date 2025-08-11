@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { Header } from '../Header'
+import { Header, HeaderOptions } from '../Header'
 import { Content, ContentProps } from '../Content'
 import Head from 'next/head'
 
@@ -9,7 +9,7 @@ export type LayoutProps = {
 }
 
 export const Layout: React.FC<LayoutProps> & {
-  Header: React.FC
+  Header: React.FC<HeaderOptions>
   Content: React.FC<ContentProps>
 } = ({ title = 'Pet-Client', children }) => {
   return (

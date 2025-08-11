@@ -8,8 +8,8 @@ import { useRouter } from 'next/router'
 
 interface ILoginResponse {
   token: string
-  id: string,
-  login: string,
+  id: string
+  login: string
   roles: string[]
 }
 

@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <>
       <Layout>
-        {session.isAuthorized && <Layout.Header />}
+        {session.isAuthorized && <Layout.Header canCreate={true} />}
         <Layout.Content>
           {/* <Spinner animation="border" /> */}
           <Feed />

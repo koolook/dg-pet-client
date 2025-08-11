@@ -2,7 +2,7 @@ import { createContext, ReactNode, useReducer } from 'react'
 
 export interface State {
   userId: string | null
-  userLogin: string | null;
+  userLogin: string | null
   userRoles: string[]
   token: string | null
   isAuthorized: boolean

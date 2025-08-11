@@ -5,9 +5,9 @@ import { useRouter } from 'next/router'
 import { useContext, useMemo } from 'react'
 
 export interface User {
-  id: string;
-  login: string;
-  roles: string[];
+  id: string
+  login: string
+  roles: string[]
 }
 
 export interface Session {
