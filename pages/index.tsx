@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react'
 
 import { api } from '@shared/api/api'
 import useSession from '@shared/lib/hooks/useSession'
-import { Button } from 'react-bootstrap'
+import { Button, Spinner } from 'react-bootstrap'
+import { Layout } from '@widgets/Layout/Layout'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,23 +20,8 @@ const geistMono = Geist_Mono({
 })
 
 export default function Home() {
-  const [data, setData] = useState<{ _id: string; text: string }[] | null>(null)
   const session = useSession()
   const router = useRouter()
-
-  useEffect(() => {
-    if (session.isAuthorized) {
-      api
-        .get('/about')
-        .then((res) => res.data)
-        .then((d) => {
-          if (d?.length) {
-            setData(d)
-          }
-        })
-        .catch((error) => {})
-    }
-  }, [session.isAuthorized])
 
   if (!session.isAuthorized) {
     return <div>Loading...</div>
@@ -43,37 +29,12 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Pet Client</title>
-        <meta name="description" content="Next.js learning project" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <h1>Pet Client</h1>
-      <p>Host: {process.env.NEXT_PUBLIC_HOST}</p>
-
-      {!data ? (
-        <div>Nothing to say</div>
-      ) : (
-        <div>
-          <ul>
-            {data.map(({ _id, text }) => (
-              <li key={_id}>{text}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {session.isAuthorized && (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            session.logoff()
-            router.push('/')
-          }}
-        >
-          Logoff
-        </Button>
-      )}
+      <Layout>
+        {session.isAuthorized && <Layout.Header />}
+        <Layout.Content>
+          <Spinner animation="border" />
+        </Layout.Content>
+      </Layout>
     </>
   )
 }

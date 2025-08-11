@@ -19,7 +19,7 @@ const StartupWidget = () => {
             session.login(token, { id: userid, roles })
           })
           .catch((error) => {
-            session.logoff();
+            session.logoff()
             router.push('/login')
           })
       } else {
