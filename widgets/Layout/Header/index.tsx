@@ -12,7 +12,7 @@ export const Header = () => {
         <div>Header placeholder</div>
         {session.isAuthorized ? (
           <div className="d-flex flex-row">
-            <div className="p-3">Logged in as: {session.user.id}</div>
+            <div className="p-3">Logged in as: {session.user.login}</div>
             <Button variant="secondary" onClick={() => session.logoff()}>
               Logoff
             </Button>

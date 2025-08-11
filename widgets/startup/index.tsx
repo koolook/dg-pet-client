@@ -14,9 +14,9 @@ const StartupWidget = () => {
         api
           .post('/auth/refresh')
           .then((res) => {
-            const { userid, roles } = res.data
+            const { userid, roles, login } = res.data
             const token = localStorage.getItem(TOKEN_KEY) || ''
-            session.login(token, { id: userid, roles })
+            session.login(token, { id: userid, roles, login })
           })
           .catch((error) => {
             session.logoff()

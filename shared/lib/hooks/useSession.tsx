@@ -5,8 +5,9 @@ import { useRouter } from 'next/router'
 import { useContext, useMemo } from 'react'
 
 export interface User {
-  id: string
-  roles: string[]
+  id: string;
+  login: string;
+  roles: string[];
 }
 
 export interface Session {
@@ -29,6 +30,7 @@ const useSession = (): Session => {
       token: state.token,
       user: {
         id: state.userId || '',
+        login: state.userLogin || '',
         roles: state.userRoles,
       },
       login: (token: string, userData: User) => {

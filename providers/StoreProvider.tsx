@@ -2,6 +2,7 @@ import { createContext, ReactNode, useReducer } from 'react'
 
 export interface State {
   userId: string | null
+  userLogin: string | null;
   userRoles: string[]
   token: string | null
   isAuthorized: boolean
@@ -9,6 +10,7 @@ export interface State {
 
 const initialState: State = {
   userId: null,
+  userLogin: null,
   token: null,
   userRoles: [],
   isAuthorized: false,
@@ -27,9 +29,9 @@ function reducer(state: State, action: Action): State {
     case 'authorization':
       const {
         token,
-        userData: { id, roles },
+        userData: { id, roles, login },
       } = action.payload
-      return { ...state, isAuthorized: true, token, userId: id, userRoles: roles }
+      return { ...state, isAuthorized: true, token, userId: id, userRoles: roles, userLogin: login }
 
     // case 'load_user':
     //     return { ...state }
@@ -39,6 +41,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         isAuthorized: false,
         userId: null,
+        userLogin: null,
         userRoles: [],
         token: null,
       }

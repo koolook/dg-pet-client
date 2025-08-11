@@ -8,7 +8,8 @@ import { useRouter } from 'next/router'
 
 interface ILoginResponse {
   token: string
-  id: string
+  id: string,
+  login: string,
   roles: string[]
 }
 
@@ -27,8 +28,8 @@ const loginForm = () => {
     api
       .post<ILoginResponse>('/auth/login', { login: userId.trim(), password })
       .then((res) => {
-        const { token, id, roles } = res.data
-        session.login(token, { id, roles })
+        const { token, id, roles, login } = res.data
+        session.login(token, { id, roles, login })
         router.push('/')
       })
       .catch((error) => {
