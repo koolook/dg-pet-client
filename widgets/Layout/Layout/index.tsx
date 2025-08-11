@@ -17,7 +17,7 @@ export const Layout: React.FC<LayoutProps> & {
       <Head>
         <title>{title || ''}</title>
       </Head>
-      <div className="layout-container">{children}</div>
+      <div className="layout-container bg-secondary">{children}</div>
     </>
   )
 }

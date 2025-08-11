@@ -1,0 +1,31 @@
+import { Button, Card } from 'react-bootstrap'
+
+export interface NewsItem {
+  title: string
+  content: string
+  imageUrl?: string
+}
+
+export interface NewsCardProps {
+  item: NewsItem
+}
+
+export const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
+  return (
+    <Card>
+      {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
+      <Card.Body>
+        <Card.Title>{item.title}</Card.Title>
+        <Card.Text>{item.content}</Card.Text>
+        <div className="row">
+          <Button className="col-md-2" variant="info">
+            Edit
+          </Button>
+          <Button className="col-md-2 mx-2" variant="info">
+            Publish
+          </Button>
+        </div>
+      </Card.Body>
+    </Card>
+  )
+}

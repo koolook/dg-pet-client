@@ -8,6 +8,7 @@ import { api } from '@shared/api/api'
 import useSession from '@shared/lib/hooks/useSession'
 import { Button, Spinner } from 'react-bootstrap'
 import { Layout } from '@widgets/Layout/Layout'
+import { Feed } from '@widgets/Feed'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,7 +33,8 @@ export default function Home() {
       <Layout>
         {session.isAuthorized && <Layout.Header />}
         <Layout.Content>
-          <Spinner animation="border" />
+          {/* <Spinner animation="border" /> */}
+          <Feed />
         </Layout.Content>
       </Layout>
     </>
