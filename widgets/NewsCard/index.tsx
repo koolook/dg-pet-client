@@ -1,6 +1,11 @@
 import { Button, Card } from 'react-bootstrap'
 
+export type NewsStatus = 'pending' | 'published'
 export interface NewsItem {
+  id?: string | null
+  author?: string
+  dateCreated?: Date
+  datePublished?: Date
   title: string
   content: string
   imageUrl?: string

@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import { Alert, Button, Card, Form } from 'react-bootstrap'
 
 import { api } from '@shared/api/api'
@@ -13,6 +13,7 @@ const Article = () => {
   const [error, setError] = useState('')
   const [imgIdx, setImgIdx] = useState(0)
   const [previewUrl, setPreviewUrl] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const session = useSession()
   const router = useRouter()
@@ -36,6 +37,10 @@ const Article = () => {
         setPending(false)
         setError(error.toJSON())
       })
+  }
+
+  const onClickAddImage = () => {
+    fileInputRef.current?.click()
   }
 
   //
@@ -86,9 +91,28 @@ const Article = () => {
       <Layout.Content>
         <div className="vh-100">
           <div className="p-3 m-auto">
-            <img className="preview-image" src="" height={200} alt="Image preview"></img>
+            <div className="d-flex flex-column">
+              {!previewUrl ? (
+                <Button onClick={onClickAddImage} variant="secondary">
+                  Add image...
+                </Button>
+              ) : (
+                <>
+                  <img
+                    className="preview-image"
+                    src={previewUrl}
+                    width={200}
+                    alt="Image preview"
+                  ></img>
+                  <Button onClick={() => setPreviewUrl('')} variant="secondary">
+                    Remove
+                  </Button>
+                </>
+              )}
+            </div>
+
             <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="formUserId">
+              <Form.Group className="d-none mb-3" controlId="formPictureFile">
                 <Form.Label>Submit file</Form.Label>
                 <Form.Control
                   type="file"
@@ -96,11 +120,22 @@ const Article = () => {
                   onChange={handleFileChange}
                   name="sampleFile"
                   placeholder="Submit file"
-                  disabled={pending}
-                  //   onChange={(e) => setUserId(e.target.value)}
+                  ref={fileInputRef}
                 />
               </Form.Group>
-
+              <Form.Group className="mb-3" controlId="formTitle">
+                <Form.Label>News Title</Form.Label>
+                <Form.Control type="text" name="title" placeholder="Enter title" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formContent">
+                <Form.Label>News Text</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={5}
+                  placeholder="Start writing yuor article"
+                  name="content"
+                />
+              </Form.Group>
               {pending ? (
                 <Button variant="primary" type="submit" disabled>
                   <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
@@ -118,7 +153,7 @@ const Article = () => {
               </Alert>
             )}
 
-            {previewUrl && (
+            {/* {previewUrl && (
               <Card>
                 <Card.Img width={200} src={previewUrl}></Card.Img>
                 <Card.Body>
@@ -126,9 +161,9 @@ const Article = () => {
                   <Card.Text>Упал - встай! Встал - Упай!</Card.Text>
                 </Card.Body>
               </Card>
-            )}
+            )} */}
 
-            <ul>
+            {/* <ul>
               {imageList.map(([idx, path]) => (
                 <li key={idx}>
                   <Card>
@@ -136,7 +171,7 @@ const Article = () => {
                   </Card>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </div>
         </div>
       </Layout.Content>
