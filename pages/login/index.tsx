@@ -30,6 +30,7 @@ const loginForm = () => {
       .then((res) => {
         const { token, id, roles, login } = res.data
         session.login(token, { id, roles, login })
+        session.finishAuth()
         router.push('/')
       })
       .catch((error) => {

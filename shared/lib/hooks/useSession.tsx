@@ -12,10 +12,12 @@ export interface User {
 
 export interface Session {
   isAuthorized: boolean
+  isAuthDone: boolean
   token: string | null
   user: User
   login: (token: string, /* expiredToken: string, */ userData: User) => void
   logoff: () => void
+  finishAuth: () => void
 }
 
 export const TOKEN_KEY = 'sessionToken'
@@ -27,6 +29,7 @@ const useSession = (): Session => {
   return useMemo(
     () => ({
       isAuthorized: state.isAuthorized,
+      isAuthDone: state.isAuthDone,
       token: state.token,
       user: {
         id: state.userId || '',
@@ -52,6 +55,9 @@ const useSession = (): Session => {
           type: 'logout',
         })
         router.push('/')
+      },
+      finishAuth: () => {
+        dispatch({ type: 'auth_done' })
       },
     }),
     [state.isAuthorized, state.token, state.userId, state.userRoles]

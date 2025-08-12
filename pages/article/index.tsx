@@ -38,7 +38,7 @@ const Article = () => {
       })
   }
 
-  // 
+  //
   const handleFileChange = (e: ChangeEvent) => {
     const input = e.currentTarget as HTMLInputElement
     const fileList = input.files
@@ -49,34 +49,32 @@ const Article = () => {
       return
     }
 
-    const objectURL = window.URL.createObjectURL(file);
+    const objectURL = window.URL.createObjectURL(file)
     setPreviewUrl(objectURL)
 
     console.log(`${file?.name} --- ${file?.size}  --- ${file?.type}`)
     console.log(`objUrl --- ${objectURL}`)
 
     const preview = document.querySelector<HTMLImageElement>('.preview-image')
-    
 
-/*     const reader = new FileReader()
+    /*     const reader = new FileReader()
     reader.onload = (e) => {
       if (preview) {
         preview.src = e.target?.result?.toString() || ''
       }
     }
     reader.readAsDataURL(file)
- */  
-      // if (preview) {
-      //   preview.src = objectURL
-      // }
-
+ */
+    // if (preview) {
+    //   preview.src = objectURL
+    // }
   }
 
   useEffect(() => {
-    if (!session.isAuthorized) {
-      router.push('/login')
+    if (!session.isAuthorized && session.isAuthDone) {
+      router.push('/')
     }
-  }, [session.isAuthorized])
+  }, [session.isAuthorized, session.isAuthDone])
 
   if (!session.isAuthorized) {
     return <div>Loading...</div>
@@ -119,9 +117,8 @@ const Article = () => {
                 error
               </Alert>
             )}
-            
-            { 
-              previewUrl && 
+
+            {previewUrl && (
               <Card>
                 <Card.Img width={200} src={previewUrl}></Card.Img>
                 <Card.Body>
@@ -129,7 +126,7 @@ const Article = () => {
                   <Card.Text>Упал - встай! Встал - Упай!</Card.Text>
                 </Card.Body>
               </Card>
-            }
+            )}
 
             <ul>
               {imageList.map(([idx, path]) => (

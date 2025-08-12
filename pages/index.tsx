@@ -24,14 +24,10 @@ export default function Home() {
   const session = useSession()
   const router = useRouter()
 
-  if (!session.isAuthorized) {
-    return <div>Loading...</div>
-  }
-
   return (
     <>
       <Layout>
-        {session.isAuthorized && <Layout.Header canCreate={true} />}
+        <Layout.Header canCreate={true} />
         <Layout.Content>
           {/* <Spinner animation="border" /> */}
           <Feed />

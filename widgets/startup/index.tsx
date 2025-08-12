@@ -17,13 +17,15 @@ const StartupWidget = () => {
             const { userid, roles, login } = res.data
             const token = localStorage.getItem(TOKEN_KEY) || ''
             session.login(token, { id: userid, roles, login })
+            session.finishAuth()
           })
           .catch((error) => {
             session.logoff()
-            router.push('/login')
+            session.finishAuth()
+            router.push('/')
           })
       } else {
-        router.push('/login')
+        router.push('/')
       }
     }
   }, [session.isAuthorized])

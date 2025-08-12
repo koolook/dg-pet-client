@@ -6,6 +6,7 @@ export interface State {
   userRoles: string[]
   token: string | null
   isAuthorized: boolean
+  isAuthDone: boolean
 }
 
 const initialState: State = {
@@ -14,11 +15,13 @@ const initialState: State = {
   token: null,
   userRoles: [],
   isAuthorized: false,
+  isAuthDone: false,
 }
 
 type Action = {
   type:
     | 'authorization'
+    | 'auth_done'
     // | 'load_user'
     | 'logout'
   payload?: any
@@ -44,6 +47,12 @@ function reducer(state: State, action: Action): State {
         userLogin: null,
         userRoles: [],
         token: null,
+      }
+
+    case 'auth_done':
+      return {
+        ...state,
+        isAuthDone: true,
       }
 
     default:
