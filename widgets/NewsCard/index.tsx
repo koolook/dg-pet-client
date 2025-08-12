@@ -12,24 +12,27 @@ export interface NewsItem {
 }
 
 export interface NewsCardProps {
+  isPreview: boolean
   item: NewsItem
 }
 
-export const NewsCard: React.FC<NewsCardProps> = ({ item }) => {
+export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) => {
   return (
     <Card>
       {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
       <Card.Body>
         <Card.Title>{item.title}</Card.Title>
         <Card.Text>{item.content}</Card.Text>
-        <div className="row">
-          <Button className="col-md-2" variant="info">
-            Edit
-          </Button>
-          <Button className="col-md-2 mx-2" variant="info">
-            Publish
-          </Button>
-        </div>
+        {!isPreview && (
+          <div className="row">
+            <Button className="col-md-2" variant="info">
+              Edit
+            </Button>
+            <Button className="col-md-2 mx-2" variant="info">
+              Publish
+            </Button>
+          </div>
+        )}
       </Card.Body>
     </Card>
   )

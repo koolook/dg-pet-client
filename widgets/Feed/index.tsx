@@ -41,7 +41,7 @@ export const Feed = () => {
     <ul className="list-unstyled">
       {news.map((article, index) => (
         <li className="p-2" key={index}>
-          <NewsCard item={article} />
+          <NewsCard item={article} isPreview={false} />
         </li>
       ))}
     </ul>

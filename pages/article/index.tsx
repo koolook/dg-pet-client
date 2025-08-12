@@ -1,11 +1,11 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
-import { Alert, Button, Card, Form } from 'react-bootstrap'
+import { Alert, Button, Form, Tab, Tabs } from 'react-bootstrap'
 
 import { api } from '@shared/api/api'
 import useSession from '@shared/lib/hooks/useSession'
 import { Layout } from '@widgets/Layout/Layout'
 import { useRouter } from 'next/router'
-import Image from 'next/image'
+import { NewsCard } from '@widgets/NewsCard'
 
 const Article = () => {
   const [pending, setPending] = useState(false)
@@ -14,6 +14,11 @@ const Article = () => {
   const [imgIdx, setImgIdx] = useState(0)
   const [previewUrl, setPreviewUrl] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [titleText, setTitleText] = useState('')
+  const [contentText, setContentText] = useState('')
+
+  const [tab, setTab] = useState('edit')
 
   const session = useSession()
   const router = useRouter()
@@ -89,91 +94,97 @@ const Article = () => {
     <Layout>
       <Layout.Header canCreate={false} />
       <Layout.Content>
-        <div className="vh-100">
-          <div className="p-3 m-auto">
-            <div className="d-flex flex-column">
-              {!previewUrl ? (
-                <Button onClick={onClickAddImage} variant="secondary">
-                  Add image...
-                </Button>
-              ) : (
-                <>
-                  <img
-                    className="preview-image"
-                    src={previewUrl}
-                    width={200}
-                    alt="Image preview"
-                  ></img>
-                  <Button onClick={() => setPreviewUrl('')} variant="secondary">
-                    Remove
-                  </Button>
-                </>
-              )}
+        <Tabs
+          activeKey={tab}
+          onSelect={(t) => {
+            if (t) {
+              setTab(t)
+            }
+          }}
+          className="mb-3"
+        >
+          <Tab eventKey="edit" title="Edit">
+            <div className="vh-100">
+              <div className="p-3 m-auto">
+                <div className="d-flex flex-column">
+                  {!previewUrl ? (
+                    <Button onClick={onClickAddImage} variant="secondary">
+                      Add image...
+                    </Button>
+                  ) : (
+                    <>
+                      <img
+                        className="preview-image"
+                        src={previewUrl}
+                        width={200}
+                        alt="Image preview"
+                      ></img>
+                      <Button onClick={() => setPreviewUrl('')} variant="secondary">
+                        Remove
+                      </Button>
+                    </>
+                  )}
+                </div>
+
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="d-none mb-3" controlId="formPictureFile">
+                    <Form.Label>Submit file</Form.Label>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      name="sampleFile"
+                      placeholder="Submit file"
+                      ref={fileInputRef}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formTitle">
+                    <Form.Label>News Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="title"
+                      placeholder="Enter title"
+                      value={titleText}
+                      onChange={(e) => setTitleText(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formContent">
+                    <Form.Label>News Text</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={5}
+                      placeholder="Start writing yuor article"
+                      name="content"
+                      value={contentText}
+                      onChange={(e) => setContentText(e.target.value)}
+                    />
+                  </Form.Group>
+                  {pending ? (
+                    <Button variant="primary" type="submit" disabled>
+                      <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                      <span role="status">Uploading...</span>
+                    </Button>
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      <span>Submit</span>
+                    </Button>
+                  )}
+                </Form>
+                {error && (
+                  <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
+                    error
+                  </Alert>
+                )}
+              </div>
             </div>
-
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="d-none mb-3" controlId="formPictureFile">
-                <Form.Label>Submit file</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  name="sampleFile"
-                  placeholder="Submit file"
-                  ref={fileInputRef}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formTitle">
-                <Form.Label>News Title</Form.Label>
-                <Form.Control type="text" name="title" placeholder="Enter title" />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formContent">
-                <Form.Label>News Text</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={5}
-                  placeholder="Start writing yuor article"
-                  name="content"
-                />
-              </Form.Group>
-              {pending ? (
-                <Button variant="primary" type="submit" disabled>
-                  <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                  <span role="status">Uploading...</span>
-                </Button>
-              ) : (
-                <Button variant="primary" type="submit">
-                  <span>Submit</span>
-                </Button>
-              )}
-            </Form>
-            {error && (
-              <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
-                error
-              </Alert>
-            )}
-
-            {/* {previewUrl && (
-              <Card>
-                <Card.Img width={200} src={previewUrl}></Card.Img>
-                <Card.Body>
-                  <Card.Title>Preview card</Card.Title>
-                  <Card.Text>Упал - встай! Встал - Упай!</Card.Text>
-                </Card.Body>
-              </Card>
-            )} */}
-
-            {/* <ul>
-              {imageList.map(([idx, path]) => (
-                <li key={idx}>
-                  <Card>
-                    <Card.Img src={'http://localhost:4000' + path}></Card.Img>
-                  </Card>
-                </li>
-              ))}
-            </ul> */}
-          </div>
-        </div>
+          </Tab>
+          <Tab eventKey="preview" title="Preview">
+            <NewsCard
+              item={{ title: titleText, imageUrl: previewUrl, content: contentText }}
+              isPreview={true}
+            />
+          </Tab>
+        </Tabs>
       </Layout.Content>
     </Layout>
   )
