@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { Alert, Button, Card, Form } from 'react-bootstrap'
 
 import { api } from '@shared/api/api'
@@ -12,6 +12,7 @@ const Article = () => {
   const [imageList, setImageList] = useState<[number, string][]>([])
   const [error, setError] = useState('')
   const [imgIdx, setImgIdx] = useState(0)
+  const [previewUrl, setPreviewUrl] = useState('')
 
   const session = useSession()
   const router = useRouter()
@@ -37,6 +38,40 @@ const Article = () => {
       })
   }
 
+  // 
+  const handleFileChange = (e: ChangeEvent) => {
+    const input = e.currentTarget as HTMLInputElement
+    const fileList = input.files
+
+    const file = fileList?.item(0)
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
+
+    const objectURL = window.URL.createObjectURL(file);
+    setPreviewUrl(objectURL)
+
+    console.log(`${file?.name} --- ${file?.size}  --- ${file?.type}`)
+    console.log(`objUrl --- ${objectURL}`)
+
+    const preview = document.querySelector<HTMLImageElement>('.preview-image')
+    
+
+/*     const reader = new FileReader()
+    reader.onload = (e) => {
+      if (preview) {
+        preview.src = e.target?.result?.toString() || ''
+      }
+    }
+    reader.readAsDataURL(file)
+ */  
+      // if (preview) {
+      //   preview.src = objectURL
+      // }
+
+  }
+
   useEffect(() => {
     if (!session.isAuthorized) {
       router.push('/login')
@@ -53,11 +88,14 @@ const Article = () => {
       <Layout.Content>
         <div className="vh-100">
           <div className="p-3 m-auto">
+            <img className="preview-image" src="" height={200} alt="Image preview"></img>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="formUserId">
                 <Form.Label>Submit file</Form.Label>
                 <Form.Control
                   type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
                   name="sampleFile"
                   placeholder="Submit file"
                   disabled={pending}
@@ -81,6 +119,18 @@ const Article = () => {
                 error
               </Alert>
             )}
+            
+            { 
+              previewUrl && 
+              <Card>
+                <Card.Img width={200} src={previewUrl}></Card.Img>
+                <Card.Body>
+                  <Card.Title>Preview card</Card.Title>
+                  <Card.Text>Упал - встай! Встал - Упай!</Card.Text>
+                </Card.Body>
+              </Card>
+            }
+
             <ul>
               {imageList.map(([idx, path]) => (
                 <li key={idx}>
