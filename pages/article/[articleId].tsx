@@ -9,6 +9,8 @@ const Article = () => {
   const session = useSession()
   const router = useRouter()
 
+  const { articleId } = router.query
+
   useEffect(() => {
     if (!session.isAuthorized && session.isAuthDone) {
       router.push('/')
@@ -23,7 +25,7 @@ const Article = () => {
     <Layout>
       <Layout.Header canCreate={false} />
       <Layout.Content>
-        <ArticleEditor />
+        <ArticleEditor item={{ title: 'Fake', content: 'Fake' }} />
       </Layout.Content>
     </Layout>
   )
