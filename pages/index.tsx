@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <>
       <Layout>
-        <Layout.Header canCreate={true} />
+        <Layout.Header canCreate={session.canEdit} />
         <Layout.Content>
           {/* <Spinner animation="border" /> */}
           <Feed />

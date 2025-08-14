@@ -30,9 +30,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
     const formData = new FormData(form)
 
     api
-      .post<{ path: string }>('/auth/upload', formData)
+      .post<{ id: string }>('/article/update', {
+        title: formData.get('title'),
+        body: formData.get('body'),
+        publish: 1,
+      })
       .then((res) => {
-        const { path } = res.data
+        const { id } = res.data
         setPending(false)
       })
       .catch((error) => {
@@ -118,7 +122,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
                   ref={fileInputRef}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formTitle">
+              <Form.Group className="mb-3" controlId="formArticleTitle">
                 <Form.Label>News Title</Form.Label>
                 <Form.Control
                   type="text"
@@ -128,13 +132,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
                   onChange={(e) => setTitleText(e.target.value)}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formContent">
+              <Form.Group className="mb-3" controlId="formArticleBody">
                 <Form.Label>News Text</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={5}
                   placeholder="Start writing yuor article"
-                  name="content"
+                  name="body"
                   value={contentText}
                   onChange={(e) => setContentText(e.target.value)}
                 />

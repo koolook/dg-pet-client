@@ -15,6 +15,7 @@ export interface Session {
   isAuthDone: boolean
   token: string | null
   user: User
+  canEdit: boolean
   login: (token: string, /* expiredToken: string, */ userData: User) => void
   logoff: () => void
   finishAuth: () => void
@@ -59,6 +60,7 @@ const useSession = (): Session => {
       finishAuth: () => {
         dispatch({ type: 'auth_done' })
       },
+      canEdit: state.isAuthorized && state.userRoles.includes('author'),
     }),
     [state.isAuthorized, state.token, state.userId, state.userRoles]
   )
