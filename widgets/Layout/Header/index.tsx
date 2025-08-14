@@ -1,4 +1,5 @@
 import useSession from '@shared/lib/hooks/useSession'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button } from 'react-bootstrap'
 
@@ -13,7 +14,9 @@ export const Header: React.FC<HeaderOptions> = ({ canCreate = true }) => {
   return (
     <header className="header-container">
       <div className="d-flex flex-row justify-content-between bg-primary text-white p-3 border rounded">
-        <div>Header placeholder</div>
+        <Link href="/" className="text-white">
+          Home
+        </Link>
         {session.isAuthorized && canCreate && (
           <Button variant="secondary" onClick={() => router.push('/article')}>
             Create new
@@ -27,9 +30,14 @@ export const Header: React.FC<HeaderOptions> = ({ canCreate = true }) => {
             </Button>
           </div>
         ) : (
-          <Button variant="secondary" onClick={() => router.push('/login')}>
-            Login
-          </Button>
+          <div className="d-flex flex-row gap-2">
+            <Button variant="secondary" onClick={() => router.push('/login')}>
+              Login
+            </Button>
+            <Button variant="secondary" onClick={() => router.push('/signup')}>
+              SignUp
+            </Button>
+          </div>
         )}
       </div>
     </header>

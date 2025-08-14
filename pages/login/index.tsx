@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
 import { useRouter } from 'next/router'
+import { Layout } from '@widgets/Layout/Layout'
 
 interface ILoginResponse {
   token: string
@@ -39,48 +40,51 @@ const loginForm = () => {
       })
   }
   return (
-    <div className="vh-100 d-flex align-items-center">
-      <div className="border border-primary col-lg-6 col-11 p-3 m-auto">
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formUserId">
-            <Form.Label>User ID</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter User ID"
-              value={userId}
-              disabled={pending}
-              onChange={(e) => setUserId(e.target.value)}
-            />
-          </Form.Group>
+    <Layout title="Pet-Client | Login">
+      <Layout.Header canCreate={false} />
+      <Layout.Content>
+        <div className="p-3">
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formUserId">
+              <Form.Label>User ID</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter User ID"
+                value={userId}
+                disabled={pending}
+                onChange={(e) => setUserId(e.target.value)}
+              />
+            </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              disabled={pending}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
-          {pending ? (
-            <Button variant="primary" type="submit" disabled>
-              <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
-              <span role="status">Loading...</span>
-            </Button>
-          ) : (
-            <Button variant="primary" type="submit">
-              <span>Submit</span>
-            </Button>
+            <Form.Group className="mb-3" controlId="formPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                disabled={pending}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+            {pending ? (
+              <Button variant="primary" type="submit" disabled>
+                <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span role="status">Loading...</span>
+              </Button>
+            ) : (
+              <Button variant="primary" type="submit">
+                <span>Submit</span>
+              </Button>
+            )}
+          </Form>
+          {error && (
+            <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
+              error
+            </Alert>
           )}
-        </Form>
-        {error && (
-          <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
-            error
-          </Alert>
-        )}
-      </div>
-    </div>
+        </div>
+      </Layout.Content>
+    </Layout>
   )
 }
 

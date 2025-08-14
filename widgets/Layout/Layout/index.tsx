@@ -3,6 +3,8 @@ import { Header, HeaderOptions } from '../Header'
 import { Content, ContentProps } from '../Content'
 import Head from 'next/head'
 
+import styles from './layout.module.scss'
+
 export type LayoutProps = {
   title?: string
   children?: ReactNode
