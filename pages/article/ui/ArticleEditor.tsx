@@ -16,11 +16,19 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
   const [previewUrl, setPreviewUrl] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Form data
   const [titleText, setTitleText] = useState(item?.title || '')
-  const [contentText, setContentText] = useState(item?.content || '')
+  const [bodyText, setBodyText] = useState(item?.content || '')
+  const [isPublishNow, setIsPublishNow] = useState(false)
 
   const session = useSession()
   const router = useRouter()
+
+  const clearForm = () => {
+    setTitleText('')
+    setBodyText('')
+    setIsPublishNow(true)
+  }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -31,17 +39,18 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
 
     api
       .post<{ id: string }>('/article/update', {
-        title: formData.get('title'),
-        body: formData.get('body'),
-        publish: 1,
+        title: titleText,
+        body: bodyText,
+        publish: isPublishNow,
       })
       .then((res) => {
         const { id } = res.data
         setPending(false)
+        clearForm()
       })
       .catch((error) => {
         setPending(false)
-        setError(error.toJSON())
+        setError((error as Error).message)
       })
   }
 
@@ -137,14 +146,19 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
                 <Form.Control
                   as="textarea"
                   rows={5}
-                  placeholder="Start writing yuor article"
+                  placeholder="Start writing your article"
                   name="body"
-                  value={contentText}
-                  onChange={(e) => setContentText(e.target.value)}
+                  value={bodyText}
+                  onChange={(e) => setBodyText(e.target.value)}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="publishCheck">
-                <Form.Check disabled type="checkbox" label="Publish now" />
+                <Form.Check
+                  type="checkbox"
+                  label="Publish now"
+                  checked={isPublishNow}
+                  onChange={(e) => setIsPublishNow(e.target.checked)}
+                />
               </Form.Group>
               {pending ? (
                 <Button variant="primary" type="submit" disabled>
@@ -167,7 +181,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
       </Tab>
       <Tab eventKey="preview" title="Preview">
         <NewsCard
-          item={{ title: titleText, imageUrl: previewUrl, content: contentText }}
+          item={{ title: titleText, imageUrl: previewUrl, content: bodyText }}
           isPreview={true}
         />
       </Tab>
