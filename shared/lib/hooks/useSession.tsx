@@ -58,11 +58,13 @@ const useSession = (): Session => {
         router.push('/')
       },
       finishAuth: () => {
+        console.log('finishAuth')
+
         dispatch({ type: 'auth_done' })
       },
       canEdit: state.isAuthorized && state.userRoles.includes('author'),
     }),
-    [state.isAuthorized, state.token, state.userId, state.userRoles]
+    [state.isAuthorized, state.isAuthDone, state.token, state.userId, state.userRoles]
   )
 }
 

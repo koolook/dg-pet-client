@@ -1,12 +1,14 @@
 import { api } from '@shared/api/api'
+import useContentData from '@shared/lib/hooks/useContentData'
 import useSession from '@shared/lib/hooks/useSession'
-import { NewsCard, NewsItem } from '@widgets/NewsCard'
+import { Article } from '@shared/models/Article'
+import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
 import { Alert, Button, Form, Tab, Tabs } from 'react-bootstrap'
 
 export interface ArticleEditorProps {
-  item?: NewsItem
+  item?: Article
 }
 
 export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
@@ -23,6 +25,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
 
   const session = useSession()
   const router = useRouter()
+  const feedData = useContentData()
 
   const clearForm = () => {
     setTitleText('')
@@ -38,7 +41,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
     const formData = new FormData(form)
 
     api
-      .post<{ id: string }>('/article/update', {
+      .post<{ id: string }>('/article', {
         title: titleText,
         body: bodyText,
         publish: isPublishNow,
@@ -47,6 +50,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
         const { id } = res.data
         setPending(false)
         clearForm()
+
+        return id as string
+      })
+      .then((id) => feedData.load([id]))
+      .then(() => {
+        router.push('/')
       })
       .catch((error) => {
         setPending(false)
@@ -181,7 +190,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
       </Tab>
       <Tab eventKey="preview" title="Preview">
         <NewsCard
-          item={{ title: titleText, imageUrl: previewUrl, content: bodyText }}
+          item={{ title: titleText, imageUrl: previewUrl, content: bodyText, isPublished: false }}
           isPreview={true}
         />
       </Tab>

@@ -1,29 +1,20 @@
+import { Article } from '@shared/models/Article'
 import { Button, Card } from 'react-bootstrap'
-
-export type NewsStatus = 'pending' | 'published'
-export interface NewsItem {
-  id?: string | null
-  author?: string
-  dateCreated?: Date
-  datePublished?: Date
-  title: string
-  content: string
-  imageUrl?: string
-}
 
 export interface NewsCardProps {
   isPreview: boolean
-  item: NewsItem
+  item: Article
 }
 
 export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) => {
+  const title = item.title + (item.isPublished ? '' : ' (draft)')
   return (
     <Card>
       {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
       <Card.Body>
-        <Card.Title>{item.title}</Card.Title>
+        <Card.Title>{title}</Card.Title>
         <Card.Text>{item.content}</Card.Text>
-        {!isPreview && (
+        {/* {!isPreview && (
           <div className="row">
             <Button className="col-md-2" variant="info">
               Edit
@@ -32,8 +23,14 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
               Publish
             </Button>
           </div>
-        )}
+        )} */}
       </Card.Body>
+      <Card.Footer>
+        <div className="d-flex flex-row justify-content-between">
+          <div>{item.dateCreated?.toLocaleString()}</div>
+          <div>{'by: ' + item.author}</div>
+        </div>
+      </Card.Footer>
     </Card>
   )
 }

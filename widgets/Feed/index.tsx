@@ -1,6 +1,9 @@
-import { NewsCard, NewsItem } from '@widgets/NewsCard'
+import useContentData from '@shared/lib/hooks/useContentData'
+import { Article } from '@shared/models/Article'
+import { NewsCard } from '@widgets/NewsCard'
+import { Spinner } from 'react-bootstrap'
 
-const news: NewsItem[] = [
+const news = [
   {
     title: 'Quick start',
     content:
@@ -37,10 +40,16 @@ const news: NewsItem[] = [
 ]
 
 export const Feed = () => {
-  return (
+  const feedData = useContentData()
+
+  return feedData.dataLoading ? (
+    <div className="d-flex justify-content-center align-items-center">
+      <Spinner animation="border" />
+    </div>
+  ) : (
     <ul className="list-unstyled">
-      {news.map((article, index) => (
-        <li className="p-2" key={index}>
+      {feedData.data.map((article) => (
+        <li className="p-2" key={article.id}>
           <NewsCard item={article} isPreview={false} />
         </li>
       ))}

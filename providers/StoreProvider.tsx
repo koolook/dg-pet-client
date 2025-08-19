@@ -1,3 +1,4 @@
+import { Article } from '@shared/models/Article'
 import { createContext, ReactNode, useReducer } from 'react'
 
 export interface State {
@@ -7,6 +8,8 @@ export interface State {
   token: string | null
   isAuthorized: boolean
   isAuthDone: boolean
+  contentData: Article[]
+  dataLoading: boolean
 }
 
 const initialState: State = {
@@ -16,6 +19,8 @@ const initialState: State = {
   userRoles: [],
   isAuthorized: false,
   isAuthDone: false,
+  contentData: [],
+  dataLoading: false,
 }
 
 type Action = {
@@ -24,6 +29,9 @@ type Action = {
     | 'auth_done'
     // | 'load_user'
     | 'logout'
+    | 'update_content'
+    | 'data_loading_start'
+    | 'data_loading_done'
   payload?: any
 }
 
@@ -53,6 +61,24 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         isAuthDone: true,
+      }
+
+    case 'update_content':
+      return {
+        ...state,
+        contentData: action.payload.contentData,
+      }
+
+    case 'data_loading_start':
+      return {
+        ...state,
+        dataLoading: true,
+      }
+
+    case 'data_loading_done':
+      return {
+        ...state,
+        dataLoading: false,
       }
 
     default:
