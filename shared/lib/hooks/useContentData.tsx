@@ -9,11 +9,13 @@ export interface ContentData {
   dataError: string
   dataLoadingStart: () => {}
   dataLoadingDone: () => {}
+  get: (id: string) => Article
   set: (data: Article[]) => {}
   clear: () => {}
   add: (data: Article[]) => {}
   remove: (data: Article[]) => {}
   load: (ids?: string[]) => Promise<void>
+  deleteById: (id: string) => Promise<void>
 }
 
 const useContentData = () => {
@@ -61,6 +63,10 @@ const useContentData = () => {
         dataLoadingStart,
         dataLoadingDone,
 
+        get: (id: string) => {
+          return state.contentData.find((article) => article.id === id)
+        },
+
         load: (ids?: string[]) => {
           setDataError('')
           dataLoadingStart()
@@ -82,6 +88,15 @@ const useContentData = () => {
             .finally(() => {
               dataLoadingDone()
             })
+        },
+        deleteById: (id: string) => {
+          return api.delete(`/article/${id}`).then((res) => {
+            console.log(`Delete article ${id}`)
+            const idx = state.contentData.findIndex((a) => a.id === id)
+            if (idx !== -1) {
+              set([...state.contentData.slice(0, idx), ...state.contentData.slice(idx + 1)])
+            }
+          })
         },
       }) as ContentData,
     [state.contentData]

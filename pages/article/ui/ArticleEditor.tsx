@@ -21,7 +21,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
   // Form data
   const [titleText, setTitleText] = useState(item?.title || '')
   const [bodyText, setBodyText] = useState(item?.content || '')
-  const [isPublishNow, setIsPublishNow] = useState(false)
+  const [isPublishNow, setIsPublishNow] = useState(!!item && item.isPublished)
 
   const session = useSession()
   const router = useRouter()
@@ -33,13 +33,14 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
     setIsPublishNow(true)
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleCreateNew = (e: FormEvent) => {
     e.preventDefault()
     setPending(true)
 
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
+    //
     api
       .post<{ id: string }>('/article', {
         title: titleText,
@@ -61,6 +62,44 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
         setPending(false)
         setError((error as Error).message)
       })
+  }
+
+  const handleUpdate = (e: FormEvent) => {
+    if (!item) return
+
+    e.preventDefault()
+    setPending(true)
+
+    // TODO:
+    // - submit file data if new picture is chosen
+    // - submit `null` picture id/url if picture removed
+
+    api
+      .put(`/article/${item.id}`, {
+        title: titleText,
+        body: bodyText,
+        publish: isPublishNow,
+      })
+      .then((res) => {
+        // TODO:
+        // - no significant response from PUT
+        // - replace existing article in feed data
+      })
+      .then(() => {
+        router.push('/')
+      })
+      .catch((error) => {
+        setPending(false)
+        setError((error as Error).message)
+      })
+  }
+
+  const handleSubmit = (e: FormEvent) => {
+    if (!!item) {
+      handleUpdate(e)
+    } else {
+      handleCreateNew(e)
+    }
   }
 
   const handleFileChange = (e: ChangeEvent) => {
@@ -190,7 +229,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
       </Tab>
       <Tab eventKey="preview" title="Preview">
         <NewsCard
-          item={{ title: titleText, imageUrl: previewUrl, content: bodyText, isPublished: false }}
+          item={{
+            title: titleText,
+            imageUrl: previewUrl,
+            content: bodyText,
+            isPublished: isPublishNow,
+          }}
           isPreview={true}
         />
       </Tab>

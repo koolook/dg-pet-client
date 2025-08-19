@@ -1,58 +1,66 @@
 import useContentData from '@shared/lib/hooks/useContentData'
-import { Article } from '@shared/models/Article'
 import { NewsCard } from '@widgets/NewsCard'
-import { Spinner } from 'react-bootstrap'
-
-const news = [
-  {
-    title: 'Quick start',
-    content:
-      'Looking to quickly add Bootstrap to your project? Use jsDelivr, provided for free by the folks at jsDelivr. Using a package manager or need to download the source files? Head to the downloads page.',
-    imageUrl: 'http://localhost:4000/static/turtle.webp',
-  },
-  {
-    title: 'CSS',
-    content:
-      'Copy-paste the stylesheet <link> into your <head> before all other stylesheets to load our CSS.',
-    imageUrl: 'http://localhost:4000/static/near-sea.webp',
-  },
-  {
-    title: 'JS',
-    content:
-      'Many of our components require the use of JavaScript to function. Specifically, they require jQuery, Popper.js, and our own JavaScript plugins. Place the following <script>s near the end of your pages, right before the closing </body> tag, to enable them. jQuery must come first, then Popper.js, and then our JavaScript plugins.',
-  },
-  {
-    title: 'Starter template',
-    content:
-      'Be sure to have your pages set up with the latest design and development standards. That means using an HTML5 doctype and including a viewport meta tag for proper responsive behaviors. Put it all together and your pages should look like this',
-    imageUrl: 'http://localhost:4000/static/tree.webp',
-  },
-  {
-    title: 'Important globals',
-    content:
-      'Bootstrap employs a handful of important global styles and settings that you’ll need to be aware of when using it, all of which are almost exclusively geared towards the normalization of cross browser styles. Let’s dive in.',
-  },
-  {
-    title: 'HTML5 doctype',
-    content:
-      'Bootstrap requires the use of the HTML5 doctype. Without it, you’ll see some funky incomplete styling, but including it shouldn’t cause any considerable hiccups.',
-  },
-]
+import { useState } from 'react'
+import { Button, Modal, Spinner } from 'react-bootstrap'
 
 export const Feed = () => {
   const feedData = useContentData()
+
+  const [showOnDeleteModal, setShowOnDeleteModal] = useState(false)
+  const [articleId, setArticleId] = useState('')
+
+  const onDelete = (id: string) => {
+    if (id) {
+      setArticleId(id)
+      setShowOnDeleteModal(true)
+    }
+  }
+
+  const handleClose = () => {
+    setArticleId('')
+    setShowOnDeleteModal(false)
+  }
+
+  const onConfirmDelete = () => {
+    if (articleId) {
+      feedData
+        .deleteById(articleId)
+        .catch((error) => {
+          console.log('`Error deleting article: ' + error.message)
+        })
+        .finally(() => {
+          handleClose()
+        })
+    }
+  }
 
   return feedData.dataLoading ? (
     <div className="d-flex justify-content-center align-items-center">
       <Spinner animation="border" />
     </div>
   ) : (
-    <ul className="list-unstyled">
-      {feedData.data.map((article) => (
-        <li className="p-2" key={article.id}>
-          <NewsCard item={article} isPreview={false} />
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="list-unstyled">
+        {feedData.data.map((article) => (
+          <li className="p-2" key={article.id}>
+            <NewsCard item={article} isPreview={false} onDelete={onDelete} />
+          </li>
+        ))}
+      </ul>
+      <Modal show={showOnDeleteModal} onHide={handleClose} backdrop="static">
+        <Modal.Header closeButton>
+          <Modal.Title>Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Do you want to delete this article?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            No
+          </Button>
+          <Button variant="primary" onClick={onConfirmDelete}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }

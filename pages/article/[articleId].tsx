@@ -4,12 +4,21 @@ import useSession from '@shared/lib/hooks/useSession'
 import { Layout } from '@widgets/Layout/Layout'
 import { useRouter } from 'next/router'
 import { ArticleEditor } from './ui/ArticleEditor'
+import useContentData from '@shared/lib/hooks/useContentData'
 
 const Article = () => {
   const session = useSession()
   const router = useRouter()
+  const feedData = useContentData()
 
   const { articleId } = router.query
+
+  const id = articleId && Array.isArray(articleId) ? articleId[0] : articleId || ''
+
+  // TODO:
+  // - get Article data by this id after data is loaded and submit
+  // the article object to <ArticleEditor>
+  // - implement get/search by id in useContentData()
 
   useEffect(() => {
     if ((!session.isAuthorized && session.isAuthDone) || !session.canEdit) {
@@ -25,7 +34,7 @@ const Article = () => {
     <Layout>
       <Layout.Header canCreate={false} />
       <Layout.Content>
-        <ArticleEditor item={{ title: 'Fake', content: 'Fake' }} />
+        <ArticleEditor item={feedData.get(id)} />
       </Layout.Content>
     </Layout>
   )
