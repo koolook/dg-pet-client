@@ -34,7 +34,7 @@ const Article = () => {
     <Layout>
       <Layout.Header canCreate={false} />
       <Layout.Content>
-        <ArticleEditor item={feedData.get(id)} />
+        <ArticleEditor article={feedData.get(id)} />
       </Layout.Content>
     </Layout>
   )

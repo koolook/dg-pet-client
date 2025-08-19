@@ -3,6 +3,10 @@ import { api } from '@shared/api/api'
 import { Article } from '@shared/models/Article'
 import { useContext, useMemo, useState } from 'react'
 
+type Obj = {
+  [key: string]: any
+}
+
 export interface ContentData {
   data: Article[]
   dataLoading: boolean
@@ -10,12 +14,14 @@ export interface ContentData {
   dataLoadingStart: () => {}
   dataLoadingDone: () => {}
   get: (id: string) => Article
-  set: (data: Article[]) => {}
+  //   set: (data: Article[]) => {}
   clear: () => {}
-  add: (data: Article[]) => {}
-  remove: (data: Article[]) => {}
+  //   add: (data: Article[]) => {}
+  //   remove: (data: Article[]) => {}
   load: (ids?: string[]) => Promise<void>
   deleteById: (id: string) => Promise<void>
+  create: (obj: Obj) => Promise<void>
+  update: (id: string, obj: Obj) => Promise<void>
 }
 
 const useContentData = () => {
@@ -35,9 +41,17 @@ const useContentData = () => {
   }
 
   const clear = () => {
-    dispatch({
-      type: 'update_content',
-      payload: { contentData: [] },
+    set([])
+  }
+
+  const loadData = (ids?: string[]) => {
+    const withBody = ids && Array.isArray(ids)
+    return api.post('/article/feed', withBody ? { ids } : {}).then((res) => {
+      console.log('Feed data: ' + JSON.stringify(res.data))
+
+      return res.data && Array.isArray(res.data)
+        ? (res.data as any[]).map<Article>(dataToArticle)
+        : []
     })
   }
 
@@ -56,10 +70,10 @@ const useContentData = () => {
         data: state.contentData,
         dataLoading: state.dataLoading,
         dataError,
-        set,
+        // set,
         clear,
-        add: (data: Article[]) => {},
-        remove: (data: Article[]) => {},
+        // add: (data: Article[]) => {},
+        // remove: (data: Article[]) => {},
         dataLoadingStart,
         dataLoadingDone,
 
@@ -72,31 +86,97 @@ const useContentData = () => {
           dataLoadingStart()
 
           const withBody = ids && Array.isArray(ids)
-          return api
-            .post('/article/feed', withBody ? { ids } : {})
-            .then((res) => {
-              console.log('Feed data: ' + JSON.stringify(res.data))
-
-              if (res.data && Array.isArray(res.data)) {
-                const feed = res.data as any[]
-                set([...feed.map<Article>(dataToArticle), ...(withBody ? state.contentData : [])])
-              }
+          return loadData(ids)
+            .then((articles) => {
+              set([...articles, ...(withBody ? state.contentData : [])])
             })
             .catch((error) => {
               setDataError((error as any).message)
+              throw error
             })
             .finally(() => {
               dataLoadingDone()
             })
         },
+
         deleteById: (id: string) => {
-          return api.delete(`/article/${id}`).then((res) => {
-            console.log(`Delete article ${id}`)
-            const idx = state.contentData.findIndex((a) => a.id === id)
-            if (idx !== -1) {
-              set([...state.contentData.slice(0, idx), ...state.contentData.slice(idx + 1)])
-            }
-          })
+          setDataError('')
+          dataLoadingStart()
+
+          return api
+            .delete(`/article/${id}`)
+            .then(() => {
+              console.log(`Delete article ${id}`)
+              const idx = state.contentData.findIndex((a) => a.id === id)
+              if (idx !== -1) {
+                set([...state.contentData.slice(0, idx), ...state.contentData.slice(idx + 1)])
+              }
+            })
+            .catch((error) => {
+              setDataError((error as any).message)
+              throw error
+            })
+            .finally(() => {
+              dataLoadingDone()
+            })
+        },
+
+        create: (obj: Obj) => {
+          setDataError('')
+          dataLoadingStart()
+
+          return api
+            .post<{ id: string }>('/article', {
+              title: obj.titleText,
+              body: obj.bodyText,
+              isPublished: obj.isPublishNow,
+            })
+            .then((res) => {
+              const { id } = res.data
+              return loadData([id])
+            })
+            .then(([article]) => {
+              set([article, ...state.contentData])
+            })
+            .catch((error) => {
+              setDataError((error as any).message)
+              throw error
+            })
+            .finally(() => {
+              dataLoadingDone()
+            })
+        },
+
+        update: (id, obj) => {
+          setDataError('')
+          dataLoadingStart()
+
+          return api
+            .put(`/article/${id}`, {
+              title: obj.titleText,
+              body: obj.bodyText,
+              isPublished: obj.isPublishNow,
+            })
+            .then(() => {
+              return loadData([id])
+            })
+            .then(([article]) => {
+              const idx = state.contentData.findIndex((a) => a.id === id)
+              if (idx !== -1) {
+                set([
+                  ...state.contentData.slice(0, idx),
+                  article,
+                  ...state.contentData.slice(idx + 1),
+                ])
+              }
+            })
+            .catch((error) => {
+              setDataError((error as any).message)
+              throw error
+            })
+            .finally(() => {
+              dataLoadingDone()
+            })
         },
       }) as ContentData,
     [state.contentData]

@@ -1,6 +1,4 @@
-import { api } from '@shared/api/api'
 import useContentData from '@shared/lib/hooks/useContentData'
-import useSession from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
 import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
@@ -8,10 +6,10 @@ import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
 import { Alert, Button, Form, Tab, Tabs } from 'react-bootstrap'
 
 export interface ArticleEditorProps {
-  item?: Article
+  article?: Article
 }
 
-export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
+export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('edit')
@@ -19,11 +17,10 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Form data
-  const [titleText, setTitleText] = useState(item?.title || '')
-  const [bodyText, setBodyText] = useState(item?.content || '')
-  const [isPublishNow, setIsPublishNow] = useState(!!item && item.isPublished)
+  const [titleText, setTitleText] = useState(article?.title || '')
+  const [bodyText, setBodyText] = useState(article?.content || '')
+  const [isPublishNow, setIsPublishNow] = useState(!!article && article.isPublished)
 
-  const session = useSession()
   const router = useRouter()
   const feedData = useContentData()
 
@@ -37,35 +34,24 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
     e.preventDefault()
     setPending(true)
 
-    const form = e.currentTarget as HTMLFormElement
-    const formData = new FormData(form)
+    // const form = e.currentTarget as HTMLFormElement
+    // const formData = new FormData(form)
 
-    //
-    api
-      .post<{ id: string }>('/article', {
-        title: titleText,
-        body: bodyText,
-        publish: isPublishNow,
-      })
-      .then((res) => {
-        const { id } = res.data
+    feedData
+      .create({ titleText, bodyText, isPublishNow })
+      .then(() => {
         setPending(false)
         clearForm()
-
-        return id as string
-      })
-      .then((id) => feedData.load([id]))
-      .then(() => {
         router.push('/')
       })
       .catch((error) => {
         setPending(false)
-        setError((error as Error).message)
+        setError(feedData.dataError)
       })
   }
 
   const handleUpdate = (e: FormEvent) => {
-    if (!item) return
+    if (!article) return
 
     e.preventDefault()
     setPending(true)
@@ -73,29 +59,19 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ item }) => {
     // TODO:
     // - submit file data if new picture is chosen
     // - submit `null` picture id/url if picture removed
-
-    api
-      .put(`/article/${item.id}`, {
-        title: titleText,
-        body: bodyText,
-        publish: isPublishNow,
-      })
-      .then((res) => {
-        // TODO:
-        // - no significant response from PUT
-        // - replace existing article in feed data
-      })
+    feedData
+      .update(article.id, { titleText, bodyText, isPublishNow })
       .then(() => {
-        router.push('/')
+        setPending(false)
       })
       .catch((error) => {
         setPending(false)
-        setError((error as Error).message)
+        setError(feedData.dataError)
       })
   }
 
   const handleSubmit = (e: FormEvent) => {
-    if (!!item) {
+    if (!!article) {
       handleUpdate(e)
     } else {
       handleCreateNew(e)
