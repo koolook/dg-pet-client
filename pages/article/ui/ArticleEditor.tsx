@@ -3,7 +3,7 @@ import { Article } from '@shared/models/Article'
 import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
-import { Alert, Button, Form, Tab, Tabs } from 'react-bootstrap'
+import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
 
 export interface ArticleEditorProps {
   article?: Article
@@ -20,6 +20,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pictureChosen, setPictureChosen] = useState(false)
+  const [showOnDeleteModal, setShowOnDeleteModal] = useState(false)
 
   // Form data
   const [titleText, setTitleText] = useState(article?.title || '')
@@ -33,6 +34,26 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     setTitleText('')
     setBodyText('')
     setIsPublishNow(true)
+  }
+
+  const handleClose = () => {
+    setShowOnDeleteModal(false)
+  }
+
+  const onConfirmDelete = () => {
+    setPending(true)
+    if (article?.id) {
+      feedData
+        .deleteById(article.id)
+        .then(() => {
+          router.push('/')
+        })
+        .catch((error) => {
+          setError('`Error deleting article: ' + error.message)
+          handleClose()
+          setPending(false)
+        })
+    }
   }
 
   const handleCreateNew = (e: FormEvent) => {
@@ -131,110 +152,128 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   }
 
   return (
-    <Tabs
-      activeKey={tab}
-      onSelect={(t) => {
-        if (t) {
-          setTab(t)
-        }
-      }}
-      className="mb-3"
-    >
-      <Tab eventKey="edit" title="Edit">
-        <div className="vh-100">
-          <div className="p-3 m-auto">
-            <div className="d-flex flex-column">
-              {!previewUrl ? (
-                <Button onClick={() => fileInputRef.current?.click()} variant="secondary">
-                  Add image...
-                </Button>
-              ) : (
-                <>
-                  <img
-                    className="preview-image"
-                    src={previewUrl}
-                    width={200}
-                    alt="Image preview"
-                  ></img>
-                  <Button onClick={clearPicture} variant="secondary">
-                    Remove
+    <>
+      <Tabs
+        activeKey={tab}
+        onSelect={(t) => {
+          if (t) {
+            setTab(t)
+          }
+        }}
+        className="mb-3"
+      >
+        <Tab eventKey="edit" title="Edit">
+          <div className="vh-100">
+            <div className="p-3 m-auto">
+              <div className="d-flex flex-column">
+                {!previewUrl ? (
+                  <Button onClick={() => fileInputRef.current?.click()} variant="secondary">
+                    Add image...
                   </Button>
-                </>
+                ) : (
+                  <>
+                    <img
+                      className="preview-image"
+                      src={previewUrl}
+                      width={200}
+                      alt="Image preview"
+                    ></img>
+                    <Button onClick={clearPicture} variant="secondary">
+                      Remove
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="d-none mb-3" controlId="formPictureFile">
+                  <Form.Label>Submit file</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="coverImage"
+                    placeholder="Submit file"
+                    ref={fileInputRef}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formArticleTitle">
+                  <Form.Label>News Title</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="title"
+                    placeholder="Enter title"
+                    value={titleText}
+                    onChange={(e) => setTitleText(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formArticleBody">
+                  <Form.Label>News Text</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={5}
+                    placeholder="Start writing your article"
+                    name="body"
+                    value={bodyText}
+                    onChange={(e) => setBodyText(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="publishCheck">
+                  <Form.Check
+                    type="checkbox"
+                    label="Publish now"
+                    // name="isPublished"
+                    checked={isPublishNow}
+                    onChange={(e) => setIsPublishNow(e.target.checked)}
+                  />
+                </Form.Group>
+                <div className="d-flex flex-row justify-content-start gap-2">
+                  <Button variant="primary" type="submit" disabled={pending}>
+                    Submit
+                  </Button>
+                  <Button
+                    variant="danger"
+                    disabled={pending}
+                    onClick={() => setShowOnDeleteModal(true)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Form>
+              {error && (
+                <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
+                  error
+                </Alert>
               )}
             </div>
-
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="d-none mb-3" controlId="formPictureFile">
-                <Form.Label>Submit file</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  name="coverImage"
-                  placeholder="Submit file"
-                  ref={fileInputRef}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formArticleTitle">
-                <Form.Label>News Title</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="title"
-                  placeholder="Enter title"
-                  value={titleText}
-                  onChange={(e) => setTitleText(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formArticleBody">
-                <Form.Label>News Text</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={5}
-                  placeholder="Start writing your article"
-                  name="body"
-                  value={bodyText}
-                  onChange={(e) => setBodyText(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="publishCheck">
-                <Form.Check
-                  type="checkbox"
-                  label="Publish now"
-                  // name="isPublished"
-                  checked={isPublishNow}
-                  onChange={(e) => setIsPublishNow(e.target.checked)}
-                />
-              </Form.Group>
-              {pending ? (
-                <Button variant="primary" type="submit" disabled>
-                  <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                  <span role="status">Uploading...</span>
-                </Button>
-              ) : (
-                <Button variant="primary" type="submit">
-                  <span>Submit</span>
-                </Button>
-              )}
-            </Form>
-            {error && (
-              <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
-                error
-              </Alert>
-            )}
           </div>
-        </div>
-      </Tab>
-      <Tab eventKey="preview" title="Preview">
-        <NewsCard
-          item={{
-            title: titleText,
-            imageUrl: previewUrl,
-            content: bodyText,
-            isPublished: isPublishNow,
-          }}
-          isPreview={true}
-        />
-      </Tab>
-    </Tabs>
+        </Tab>
+        <Tab eventKey="preview" title="Preview">
+          <NewsCard
+            item={{
+              title: titleText,
+              imageUrl: previewUrl,
+              content: bodyText,
+              isPublished: isPublishNow,
+            }}
+            isPreview={true}
+          />
+        </Tab>
+      </Tabs>
+      <Modal show={showOnDeleteModal} onHide={handleClose} backdrop="static">
+        <Modal.Header closeButton>
+          <Modal.Title>Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Do you want to delete this article?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            No
+          </Button>
+          <Button variant="primary" onClick={onConfirmDelete}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   )
 }

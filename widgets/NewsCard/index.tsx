@@ -6,10 +6,9 @@ import { Button, Card } from 'react-bootstrap'
 export interface NewsCardProps {
   isPreview: boolean
   item: Partial<Article>
-  onDelete?: (id: string) => void
 }
 
-export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true, onDelete }) => {
+export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) => {
   const session = useSession()
   const router = useRouter()
 
@@ -37,18 +36,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true, onDe
                 onClick={() => router.push(`/article/${item.id}`)}
               >
                 Edit
-              </Button>
-              <Button
-                size="sm"
-                variant="outline-primary"
-                onClick={() => {
-                  if (onDelete && item.id) onDelete(item.id)
-                }}
-              >
-                Delete
-              </Button>
-              <Button size="sm" variant="outline-primary">
-                Publish
               </Button>
             </div>
           )}
