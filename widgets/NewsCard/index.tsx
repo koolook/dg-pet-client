@@ -20,7 +20,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true, onDe
   const title = item.title + (item.isPublished ? '' : ' (draft)')
   return (
     <Card>
-      {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
+      {item.imageUrl && (
+        <Card.Img variant="top" src={process.env.NEXT_PUBLIC_HOST_API + item.imageUrl} />
+      )}
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <Card.Text>{item.content}</Card.Text>

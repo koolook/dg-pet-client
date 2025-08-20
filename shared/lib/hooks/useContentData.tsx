@@ -3,10 +3,6 @@ import { api } from '@shared/api/api'
 import { Article } from '@shared/models/Article'
 import { useContext, useMemo, useState } from 'react'
 
-type Obj = {
-  [key: string]: any
-}
-
 export interface ContentData {
   data: Article[]
   dataLoading: boolean
@@ -20,8 +16,8 @@ export interface ContentData {
   //   remove: (data: Article[]) => {}
   load: (ids?: string[]) => Promise<void>
   deleteById: (id: string) => Promise<void>
-  create: (obj: Obj) => Promise<void>
-  update: (id: string, obj: Obj) => Promise<void>
+  create: (formData: FormData) => Promise<void>
+  update: (id: string, formData: FormData) => Promise<void>
 }
 
 const useContentData = () => {
@@ -62,6 +58,7 @@ const useContentData = () => {
     author: item.author,
     dateCreated: new Date(item.createdAt),
     isPublished: item.isPublished,
+    imageUrl: item.imageUrl,
   })
 
   return useMemo(
@@ -121,16 +118,12 @@ const useContentData = () => {
             })
         },
 
-        create: (obj: Obj) => {
+        create: (formData) => {
           setDataError('')
           dataLoadingStart()
 
           return api
-            .post<{ id: string }>('/article', {
-              title: obj.titleText,
-              body: obj.bodyText,
-              isPublished: obj.isPublishNow,
-            })
+            .post<{ id: string }>('/article', formData)
             .then((res) => {
               const { id } = res.data
               return loadData([id])
@@ -147,16 +140,12 @@ const useContentData = () => {
             })
         },
 
-        update: (id, obj) => {
+        update: (id, formData) => {
           setDataError('')
           dataLoadingStart()
 
           return api
-            .put(`/article/${id}`, {
-              title: obj.titleText,
-              body: obj.bodyText,
-              isPublished: obj.isPublishNow,
-            })
+            .put(`/article/${id}`, formData)
             .then(() => {
               return loadData([id])
             })

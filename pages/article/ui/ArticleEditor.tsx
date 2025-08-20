@@ -10,11 +10,16 @@ export interface ArticleEditorProps {
 }
 
 export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
+  const isEditMode = !!article
+
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('edit')
-  const [previewUrl, setPreviewUrl] = useState('')
+  const [previewUrl, setPreviewUrl] = useState(
+    isEditMode && article.imageUrl ? process.env.NEXT_PUBLIC_HOST_API + article.imageUrl : ''
+  )
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [pictureChosen, setPictureChosen] = useState(false)
 
   // Form data
   const [titleText, setTitleText] = useState(article?.title || '')
@@ -34,11 +39,15 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     e.preventDefault()
     setPending(true)
 
-    // const form = e.currentTarget as HTMLFormElement
-    // const formData = new FormData(form)
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+    if (!pictureChosen) {
+      formData.delete('coverImage')
+    }
+    formData.append('isPublished', isPublishNow.toString())
 
     feedData
-      .create({ titleText, bodyText, isPublishNow })
+      .create(formData)
       .then(() => {
         setPending(false)
         clearForm()
@@ -59,10 +68,22 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     // TODO:
     // - submit file data if new picture is chosen
     // - submit `null` picture id/url if picture removed
+
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+
+    if (!pictureChosen) {
+      formData.delete('coverImage')
+      if (article.imageUrl && !previewUrl) {
+        formData.append('removeImage', 'true')
+      }
+    }
+    formData.append('isPublished', isPublishNow.toString())
     feedData
-      .update(article.id, { titleText, bodyText, isPublishNow })
+      .update(article.id, formData)
       .then(() => {
         setPending(false)
+        router.push('/')
       })
       .catch((error) => {
         setPending(false)
@@ -71,7 +92,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   }
 
   const handleSubmit = (e: FormEvent) => {
-    if (!!article) {
+    if (isEditMode) {
       handleUpdate(e)
     } else {
       handleCreateNew(e)
@@ -79,8 +100,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   }
 
   const handleFileChange = (e: ChangeEvent) => {
-    const input = e.currentTarget as HTMLInputElement
-    const fileList = input.files
+    const fileList = fileInputRef.current?.files
 
     const file = fileList?.item(0)
     if (!file) {
@@ -88,26 +108,26 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       return
     }
 
-    const objectURL = window.URL.createObjectURL(file)
+    setPictureChosen(true)
+    const objectURL = URL.createObjectURL(file)
     setPreviewUrl(objectURL)
 
     console.log(`${file?.name} --- ${file?.size}  --- ${file?.type}`)
     console.log(`objUrl --- ${objectURL}`)
+  }
 
-    // const preview = document.querySelector<HTMLImageElement>('.preview-image')
-
-    /*     const reader = new FileReader()
-    reader.onload = (e) => {
-      if (preview) {
-        preview.src = e.target?.result?.toString() || ''
-      }
+  const clearPicture = () => {
+    if (pictureChosen) {
+      URL.revokeObjectURL(previewUrl)
     }
-    reader.readAsDataURL(file)
-    */
 
-    // if (preview) {
-    //   preview.src = objectURL
-    // }
+    setPreviewUrl('')
+    setPictureChosen(false)
+
+    if (fileInputRef.current) {
+      const input = fileInputRef.current
+      input.value = ''
+    }
   }
 
   return (
@@ -136,7 +156,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     width={200}
                     alt="Image preview"
                   ></img>
-                  <Button onClick={() => setPreviewUrl('')} variant="secondary">
+                  <Button onClick={clearPicture} variant="secondary">
                     Remove
                   </Button>
                 </>
@@ -150,7 +170,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  name="sampleFile"
+                  name="coverImage"
                   placeholder="Submit file"
                   ref={fileInputRef}
                 />
@@ -180,6 +200,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                 <Form.Check
                   type="checkbox"
                   label="Publish now"
+                  // name="isPublished"
                   checked={isPublishNow}
                   onChange={(e) => setIsPublishNow(e.target.checked)}
                 />
