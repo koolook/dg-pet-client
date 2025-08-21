@@ -1,5 +1,6 @@
 import useSession from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
+import { MyQuillReader } from '@shared/ui/MyQuillReader'
 import { useRouter } from 'next/router'
 import { Button, Card } from 'react-bootstrap'
 
@@ -23,8 +24,8 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
         <Card.Img variant="top" src={process.env.NEXT_PUBLIC_HOST_API + item.imageUrl} />
       )}
       <Card.Body>
-        <Card.Title>{title}</Card.Title>
-        <Card.Text>{item.content}</Card.Text>
+        <Card.Title as="h3">{title}</Card.Title>
+        <MyQuillReader text={item.content || ''} />
       </Card.Body>
       <Card.Footer>
         <div className={footerClass}>

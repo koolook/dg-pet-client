@@ -1,5 +1,6 @@
 import useContentData from '@shared/lib/hooks/useContentData'
 import { Article } from '@shared/models/Article'
+import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
 import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
@@ -65,6 +66,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     if (!pictureChosen) {
       formData.delete('coverImage')
     }
+    formData.append('body', bodyText)
     formData.append('isPublished', isPublishNow.toString())
 
     feedData
@@ -99,6 +101,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
         formData.append('removeImage', 'true')
       }
     }
+    formData.append('body', bodyText)
     formData.append('isPublished', isPublishNow.toString())
     feedData
       .update(article.id, formData)
@@ -198,7 +201,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formArticleTitle">
-                  <Form.Label>News Title</Form.Label>
+                  <Form.Label>Article Title</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
@@ -208,15 +211,16 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formArticleBody">
-                  <Form.Label>News Text</Form.Label>
-                  <Form.Control
+                  <Form.Label>Article Body</Form.Label>
+                  {/* <Form.Control
                     as="textarea"
                     rows={5}
                     placeholder="Start writing your article"
                     name="body"
                     value={bodyText}
                     onChange={(e) => setBodyText(e.target.value)}
-                  />
+                  /> */}
+                  <MyQuillEditor value={bodyText} onChange={(value) => setBodyText(value)} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="publishCheck">
                   <Form.Check
@@ -248,6 +252,9 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
             </div>
           </div>
         </Tab>
+        {/* <Tab eventKey="quill" title="Quill">
+              <MyQuillEditor value={bodyText} onChange={onChangeQuill}/>
+        </Tab> */}
         <Tab eventKey="preview" title="Preview">
           <NewsCard
             item={{

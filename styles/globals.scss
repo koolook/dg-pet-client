@@ -3,3 +3,8 @@
   display: flex;
   flex-direction: column;
 }
+
+// Remove borders in readOnly mode
+.ql-container.ql-disabled {
+  border: none !important;
+}
