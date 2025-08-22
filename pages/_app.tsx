@@ -1,11 +1,12 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '../styles/globals.scss'
-
-import { useEffect } from 'react'
 import type { AppProps } from 'next/app'
+import { useEffect } from 'react'
+
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 import StoreProvider from '@providers/StoreProvider'
 import StartupWidget from '@widgets/startup'
+
+import '../styles/globals.scss'
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {

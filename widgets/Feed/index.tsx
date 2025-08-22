@@ -1,6 +1,8 @@
-import useContentData from '@shared/lib/hooks/useContentData'
-import { NewsCard } from '@widgets/NewsCard'
 import { Spinner } from 'react-bootstrap'
+
+import { NewsCard } from '@widgets/NewsCard'
+
+import useContentData from '@shared/lib/hooks/useContentData'
 
 export const Feed = () => {
   const feedData = useContentData()

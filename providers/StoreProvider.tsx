@@ -1,5 +1,6 @@
+import { ReactNode, createContext, useReducer } from 'react'
+
 import { Article } from '@shared/models/Article'
-import { createContext, ReactNode, useReducer } from 'react'
 
 export interface State {
   userId: string | null

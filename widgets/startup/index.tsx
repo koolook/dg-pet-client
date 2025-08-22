@@ -1,9 +1,10 @@
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+
 import { api } from '@shared/api/api'
 import useContentData from '@shared/lib/hooks/useContentData'
 import useSession, { TOKEN_KEY } from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
 
 const StartupWidget = () => {
   const session = useSession()

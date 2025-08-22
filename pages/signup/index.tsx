@@ -1,8 +1,10 @@
-import { api } from '@shared/api/api'
-import { Layout } from '@widgets/Layout/Layout'
 import Link from 'next/link'
 import { FormEvent, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
+
+import { Layout } from '@widgets/Layout/Layout'
+
+import { api } from '@shared/api/api'
 
 export const SignupForm = () => {
   const [userId, setUserId] = useState('')

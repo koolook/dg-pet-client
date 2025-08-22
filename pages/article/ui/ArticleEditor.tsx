@@ -1,10 +1,12 @@
-import useContentData from '@shared/lib/hooks/useContentData'
-import { Article } from '@shared/models/Article'
-import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
-import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
 import React, { FormEvent, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
+
+import { NewsCard } from '@widgets/NewsCard'
+
+import useContentData from '@shared/lib/hooks/useContentData'
+import { Article } from '@shared/models/Article'
+import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
 
 export interface ArticleEditorProps {
   article?: Article

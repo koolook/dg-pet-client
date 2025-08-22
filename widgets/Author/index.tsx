@@ -1,6 +1,7 @@
-import useSession from '@shared/lib/hooks/useSession'
 import { useRouter } from 'next/router'
 import { ReactNode, useEffect } from 'react'
+
+import useSession from '@shared/lib/hooks/useSession'
 
 export const Author: React.FC<{ children: ReactNode }> = ({ children }) => {
   const session = useSession()

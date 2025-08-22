@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+
 // import { cacheAdapterEnhancer } from 'axios-extensions'
 
 import { TOKEN_KEY } from '@shared/lib/hooks/useSession'

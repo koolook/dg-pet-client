@@ -1,11 +1,13 @@
-import { api } from '@shared/api/api'
-import useSession from '@shared/lib/hooks/useSession'
+import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
+import Alert from 'react-bootstrap/Alert'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import Alert from 'react-bootstrap/Alert'
-import { useRouter } from 'next/router'
+
 import { Layout } from '@widgets/Layout/Layout'
+
+import { api } from '@shared/api/api'
+import useSession from '@shared/lib/hooks/useSession'
 
 interface ILoginResponse {
   token: string

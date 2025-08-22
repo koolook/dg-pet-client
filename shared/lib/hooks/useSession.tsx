@@ -1,8 +1,8 @@
 //
-
-import { StoreContext } from '@providers/StoreProvider'
 import { useRouter } from 'next/router'
 import { useContext, useMemo } from 'react'
+
+import { StoreContext } from '@providers/StoreProvider'
 
 export interface User {
   id: string

@@ -1,10 +1,12 @@
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
-import useSession from '@shared/lib/hooks/useSession'
-import { Layout } from '@widgets/Layout/Layout'
-import { useRouter } from 'next/router'
-import { ArticleEditor } from './ui/ArticleEditor'
 import Author from '@widgets/Author'
+import { Layout } from '@widgets/Layout/Layout'
+
+import useSession from '@shared/lib/hooks/useSession'
+
+import { ArticleEditor } from './ui/ArticleEditor'
 
 const Article = () => {
   const session = useSession()

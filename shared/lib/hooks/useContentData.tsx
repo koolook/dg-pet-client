@@ -1,7 +1,9 @@
+import { useContext, useMemo, useState } from 'react'
+
 import { StoreContext } from '@providers/StoreProvider'
+
 import { api } from '@shared/api/api'
 import { Article } from '@shared/models/Article'
-import { useContext, useMemo, useState } from 'react'
 
 export interface ContentData {
   data: Article[]

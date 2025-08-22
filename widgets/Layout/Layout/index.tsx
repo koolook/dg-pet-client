@@ -1,7 +1,8 @@
-import React, { ReactNode } from 'react'
-import { Header, HeaderOptions } from '../Header'
-import { Content, ContentProps } from '../Content'
 import Head from 'next/head'
+import React, { ReactNode } from 'react'
+
+import { Content, ContentProps } from '../Content'
+import { Header, HeaderOptions } from '../Header'
 
 import styles from './layout.module.scss'
 

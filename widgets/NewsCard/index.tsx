@@ -1,8 +1,9 @@
+import { useRouter } from 'next/router'
+import { Button, Card } from 'react-bootstrap'
+
 import useSession from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
 import { MyQuillReader } from '@shared/ui/MyQuillReader'
-import { useRouter } from 'next/router'
-import { Button, Card } from 'react-bootstrap'
 
 export interface NewsCardProps {
   isPreview: boolean

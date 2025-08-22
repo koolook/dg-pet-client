@@ -1,6 +1,7 @@
-import useSession from '@shared/lib/hooks/useSession'
-import { Layout } from '@widgets/Layout/Layout'
 import { Feed } from '@widgets/Feed'
+import { Layout } from '@widgets/Layout/Layout'
+
+import useSession from '@shared/lib/hooks/useSession'
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
