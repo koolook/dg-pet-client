@@ -24,7 +24,7 @@ const Article = () => {
     if ((!session.isAuthorized && session.isAuthDone) || !session.canEdit) {
       router.push('/')
     }
-  }, [session.isAuthorized, session.isAuthDone, session.canEdit])
+  }, [router, session.isAuthorized, session.isAuthDone, session.canEdit])
 
   if (!session.isAuthorized) {
     return <div>Loading...</div>

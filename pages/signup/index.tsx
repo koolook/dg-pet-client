@@ -32,7 +32,7 @@ export const SignupForm = () => {
 
     api
       .post('/auth/signup', { login: userId.trim(), password })
-      .then((res) => {
+      .then(() => {
         // router.push('/')
         setSignupComplete(true)
       })

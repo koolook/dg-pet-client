@@ -3,7 +3,7 @@ import { Article } from '@shared/models/Article'
 import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
 import { NewsCard } from '@widgets/NewsCard'
 import { useRouter } from 'next/router'
-import React, { ChangeEvent, FormEvent, useRef, useState } from 'react'
+import React, { FormEvent, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
 
 export interface ArticleEditorProps {
@@ -76,7 +76,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
         clearForm()
         router.push('/')
       })
-      .catch((error) => {
+      .catch(() => {
         setPending(false)
         setError(feedData.dataError)
       })
@@ -109,7 +109,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
         setPending(false)
         router.push('/')
       })
-      .catch((error) => {
+      .catch(() => {
         setPending(false)
         setError(feedData.dataError)
       })
@@ -123,7 +123,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     }
   }
 
-  const handleFileChange = (e: ChangeEvent) => {
+  const handleFileChange = () => {
     const fileList = fileInputRef.current?.files
 
     const file = fileList?.item(0)

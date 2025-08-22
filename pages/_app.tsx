@@ -10,6 +10,7 @@ import StartupWidget from '@widgets/startup'
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Dynamically import Bootstrap JavaScript on the client-side
+    // eslint-disable-next-line
     typeof document !== 'undefined' ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 

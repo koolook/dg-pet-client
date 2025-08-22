@@ -14,7 +14,7 @@ interface ILoginResponse {
   roles: string[]
 }
 
-const loginForm = () => {
+const LoginForm = () => {
   const session = useSession()
   const router = useRouter()
   const [userId, setUserId] = useState('')
@@ -88,4 +88,4 @@ const loginForm = () => {
   )
 }
 
-export default loginForm
+export default LoginForm

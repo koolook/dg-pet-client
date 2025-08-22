@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint -- --dir .",
+    "lint": "next lint",
     "lint:fix": "next lint --fix -- --dir .",
     "stylelint": "stylelint '**/*{.css,.scss}'",
     "stylelint:fix": "stylelint '**/*{.css,.scss}' --fix",
