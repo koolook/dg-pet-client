@@ -53,15 +53,22 @@ const useContentData = () => {
     })
   }
 
-  const dataToArticle = (item: any) => ({
-    id: item.id,
-    title: item.title,
-    content: item.body,
-    author: item.author,
-    dateCreated: new Date(item.createdAt),
-    isPublished: item.isPublished,
-    imageUrl: item.imageUrl,
-  })
+  const dataToArticle = (item: any) => {
+    const article: Article = {
+      id: item.id,
+      title: item.title,
+      content: item.body,
+      author: item.author,
+      createdAt: new Date(item.createdAt),
+      isPublished: item.isPublished,
+      imageUrl: item.imageUrl,
+    }
+    if (item.publishAt) {
+      article.publishAt = new Date(item.publishAt)
+    }
+
+    return article
+  }
 
   return useMemo(
     () =>

@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router'
 import React, { FormEvent, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 import { NewsCard } from '@widgets/NewsCard'
 
@@ -15,6 +17,8 @@ export interface ArticleEditorProps {
 export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const isEditMode = !!article
 
+  const thisDateTime = new Date()
+
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('edit')
@@ -28,7 +32,9 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   // Form data
   const [titleText, setTitleText] = useState(article?.title || '')
   const [bodyText, setBodyText] = useState(article?.content || '')
-  const [isPublishNow, setIsPublishNow] = useState(!!article && article.isPublished)
+  const [isPublish, setIsPublish] = useState(!!article?.isPublished || !!article?.publishAt)
+  const [isPublishAt, setIsPublishAt] = useState(!!article?.publishAt)
+  const [publishAtDate, setPublishAtDate] = useState<Date | null>(article?.publishAt || new Date())
 
   const router = useRouter()
   const feedData = useContentData()
@@ -36,7 +42,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const clearForm = () => {
     setTitleText('')
     setBodyText('')
-    setIsPublishNow(true)
+    setIsPublish(true)
   }
 
   const handleClose = () => {
@@ -69,7 +75,11 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       formData.delete('coverImage')
     }
     formData.append('body', bodyText)
-    formData.append('isPublished', isPublishNow.toString())
+
+    formData.append('publish', isPublish.toString())
+    if (isPublish && isPublishAt && publishAtDate) {
+      formData.append('publishAt', publishAtDate.valueOf().toString())
+    }
 
     feedData
       .create(formData)
@@ -90,10 +100,6 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     e.preventDefault()
     setPending(true)
 
-    // TODO:
-    // - submit file data if new picture is chosen
-    // - submit `null` picture id/url if picture removed
-
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
@@ -104,7 +110,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       }
     }
     formData.append('body', bodyText)
-    formData.append('isPublished', isPublishNow.toString())
+
+    formData.append('publish', isPublish.toString())
+    if (isPublish && isPublishAt && publishAtDate) {
+      formData.append('publishAt', publishAtDate.valueOf().toString())
+    }
+
     feedData
       .update(article.id, formData)
       .then(() => {
@@ -214,23 +225,42 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formArticleBody">
                   <Form.Label>Article Body</Form.Label>
-                  {/* <Form.Control
-                    as="textarea"
-                    rows={5}
-                    placeholder="Start writing your article"
-                    name="body"
-                    value={bodyText}
-                    onChange={(e) => setBodyText(e.target.value)}
-                  /> */}
                   <MyQuillEditor value={bodyText} onChange={(value) => setBodyText(value)} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="publishCheck">
                   <Form.Check
                     type="checkbox"
-                    label="Publish now"
+                    label="Publish"
                     // name="isPublished"
-                    checked={isPublishNow}
-                    onChange={(e) => setIsPublishNow(e.target.checked)}
+                    checked={isPublish}
+                    onChange={(e) => setIsPublish(e.target.checked)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 ms-3 d-flex flex-row gap-2 " controlId="publishDate">
+                  <Form.Check
+                    type="checkbox"
+                    label="Publish at:"
+                    name="isPublished"
+                    checked={isPublishAt}
+                    disabled={!isPublish}
+                    onChange={(e) => setIsPublishAt(e.target.checked)}
+                  ></Form.Check>
+                  <DatePicker
+                    id="my-datepicker"
+                    selected={publishAtDate}
+                    disabled={!isPublishAt}
+                    onChange={(date) => setPublishAtDate(date)}
+                    showTimeSelect
+                    minDate={thisDateTime}
+                    minTime={
+                      publishAtDate?.getDate() === thisDateTime.getDate() ? new Date() : undefined
+                    }
+                    maxTime={
+                      publishAtDate?.getDate() === thisDateTime.getDate()
+                        ? new Date(thisDateTime.setHours(23, 59, 59))
+                        : undefined
+                    }
+                    dateFormat="MMMM d, yyyy HH:mm"
                   />
                 </Form.Group>
                 <div className="d-flex flex-row justify-content-start gap-2">
@@ -263,7 +293,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
               title: titleText,
               imageUrl: previewUrl,
               content: bodyText,
-              isPublished: isPublishNow,
+              isPublished: isPublish,
             }}
             isPreview={true}
           />

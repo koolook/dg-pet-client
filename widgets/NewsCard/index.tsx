@@ -18,7 +18,13 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
 
   const footerClass = `d-flex flex-row justify-content-${canEditThis ? 'between' : 'end'}`
 
-  const title = item.title + (item.isPublished ? '' : ' (draft)')
+  const title =
+    item.title +
+    (item.isPublished
+      ? ''
+      : item.publishAt
+        ? ` (draft until ${item.publishAt.toLocaleString()})`
+        : ' (draft)')
   return (
     <Card>
       {item.imageUrl && (
@@ -42,7 +48,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
             </div>
           )}
           <div className="d-flex flex-row gap-2">
-            <div>{item.dateCreated?.toLocaleString()}</div>
+            <div>{item.createdAt?.toLocaleString()}</div>
             <div>{'by: ' + item.author}</div>
           </div>
         </div>

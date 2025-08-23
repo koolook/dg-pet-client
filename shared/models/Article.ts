@@ -1,8 +1,8 @@
 export interface Article {
   id: string
   author: string
-  dateCreated: Date
-  datePublished?: Date
+  createdAt: Date
+  publishAt?: Date
   title: string
   content: string
   imageUrl?: string
