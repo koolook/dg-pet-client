@@ -18,7 +18,7 @@ export interface ContentData {
   //   remove: (data: Article[]) => {}
   load: (ids?: string[]) => Promise<void>
   deleteById: (id: string) => Promise<void>
-  create: (formData: FormData) => Promise<void>
+  create: (formData: FormData) => Promise<string>
   update: (id: string, formData: FormData) => Promise<void>
 }
 
@@ -139,6 +139,7 @@ const useContentData = () => {
             })
             .then(([article]) => {
               set([article, ...state.contentData])
+              return article.id
             })
             .catch((error) => {
               setDataError((error as any).message)

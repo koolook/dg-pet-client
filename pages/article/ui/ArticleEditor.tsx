@@ -83,10 +83,10 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
 
     feedData
       .create(formData)
-      .then(() => {
+      .then((id) => {
         setPending(false)
         clearForm()
-        router.push('/')
+        router.push(`/#${id}`)
       })
       .catch(() => {
         setPending(false)
@@ -120,7 +120,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       .update(article.id, formData)
       .then(() => {
         setPending(false)
-        router.push('/')
+        router.push(`/#${article.id}`)
       })
       .catch(() => {
         setPending(false)
