@@ -4,6 +4,7 @@ import { StoreContext } from '@providers/StoreProvider'
 
 import { api } from '@shared/api/api'
 import { Article } from '@shared/models/Article'
+import { QuoteItem } from '@shared/models/QuoteItem'
 
 export interface ContentData {
   data: Article[]
@@ -12,14 +13,16 @@ export interface ContentData {
   dataLoadingStart: () => {}
   dataLoadingDone: () => {}
   get: (id: string) => Article
-  //   set: (data: Article[]) => {}
   clear: () => {}
-  //   add: (data: Article[]) => {}
-  //   remove: (data: Article[]) => {}
   load: (ids?: string[]) => Promise<void>
   deleteById: (id: string) => Promise<void>
   create: (formData: FormData) => Promise<string>
   update: (id: string, formData: FormData) => Promise<void>
+
+  // quites operations
+  quotes: QuoteItem[]
+  addQuote: (quote: QuoteItem) => void
+  clearQuotes: () => void
 }
 
 const useContentData = () => {
@@ -61,8 +64,11 @@ const useContentData = () => {
       author: item.author,
       createdAt: new Date(item.createdAt),
       isPublished: item.isPublished,
-      imageUrl: item.imageUrl,
     }
+    if (item.imageUrl) {
+      article.imageUrl = process.env.NEXT_PUBLIC_HOST_API + item.imageUrl
+    }
+
     if (item.publishAt) {
       article.publishAt = new Date(item.publishAt)
     }
@@ -177,8 +183,16 @@ const useContentData = () => {
               dataLoadingDone()
             })
         },
+
+        quotes: state.quotes,
+        addQuote: (quote: QuoteItem) => {
+          dispatch({ type: 'quote_add', payload: { quote } })
+        },
+        clearQuotes: () => {
+          dispatch({ type: 'quote_clear' })
+        },
       }) as ContentData,
-    [state.contentData]
+    [state.contentData, state.quotes]
   )
 }
 

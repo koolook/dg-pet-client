@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 import { Button, Card } from 'react-bootstrap'
 
+import useContentData from '@shared/lib/hooks/useContentData'
 import useSession from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
 import { MyQuillReader } from '@shared/ui/MyQuillReader'
@@ -13,10 +15,25 @@ export interface NewsCardProps {
 export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) => {
   const session = useSession()
   const router = useRouter()
+  const contentData = useContentData()
+
+  const [quoteTrigger, setQuoteTrigger] = useState(0)
+
+  const handleOnQuote = (quoteHtml: string) => {
+    console.log(quoteHtml)
+    console.log(quoteTrigger)
+    if (item?.id) {
+      contentData.addQuote({
+        articleId: item.id,
+        quoteHtml,
+      })
+    }
+  }
 
   const canEditThis = !isPreview && session.canEdit && item?.author === session.user.login
+  const canQuoteThis = !isPreview && session.canEdit
 
-  const footerClass = `d-flex flex-row justify-content-${canEditThis ? 'between' : 'end'}`
+  const footerClass = `d-flex flex-row justify-content-${canEditThis || canQuoteThis ? 'between' : 'end'}`
 
   const title =
     item.title +
@@ -27,17 +44,19 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
         : ' (draft)')
   return (
     <Card>
-      {item.imageUrl && (
-        <Card.Img variant="top" src={process.env.NEXT_PUBLIC_HOST_API + item.imageUrl} />
-      )}
+      {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
       <Card.Body>
         <Card.Title as="h3">{title}</Card.Title>
-        <MyQuillReader text={item.content || ''} />
+        <MyQuillReader
+          text={item.content || ''}
+          quoteTrigger={quoteTrigger}
+          onQuote={handleOnQuote}
+        />
       </Card.Body>
       <Card.Footer>
         <div className={footerClass}>
-          {canEditThis && (
-            <div className="d-flex flex-row gap-2">
+          <div className="d-flex flex-row gap-2">
+            {canEditThis && (
               <Button
                 size="sm"
                 variant="outline-primary"
@@ -45,8 +64,17 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
               >
                 Edit
               </Button>
-            </div>
-          )}
+            )}
+            {canQuoteThis && (
+              <Button
+                size="sm"
+                variant="outline-primary"
+                onClick={() => setQuoteTrigger(quoteTrigger + 1)}
+              >
+                Add quote...
+              </Button>
+            )}
+          </div>
           <div className="d-flex flex-row gap-2">
             <div>{item.createdAt?.toLocaleString()}</div>
             <div>{'by: ' + item.author}</div>

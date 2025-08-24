@@ -23,7 +23,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const [error, setError] = useState('')
   const [tab, setTab] = useState('edit')
   const [previewUrl, setPreviewUrl] = useState(
-    isEditMode && article.imageUrl ? process.env.NEXT_PUBLIC_HOST_API + article.imageUrl : ''
+    isEditMode && article.imageUrl ? article.imageUrl : ''
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pictureChosen, setPictureChosen] = useState(false)

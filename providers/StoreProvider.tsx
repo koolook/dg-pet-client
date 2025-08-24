@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useReducer } from 'react'
 
 import { Article } from '@shared/models/Article'
+import { QuoteItem } from '@shared/models/QuoteItem'
 
 export interface State {
   userId: string | null
@@ -11,6 +12,7 @@ export interface State {
   isAuthDone: boolean
   contentData: Article[]
   dataLoading: boolean
+  quotes: QuoteItem[]
 }
 
 const initialState: State = {
@@ -22,6 +24,7 @@ const initialState: State = {
   isAuthDone: false,
   contentData: [],
   dataLoading: false,
+  quotes: [],
 }
 
 type Action = {
@@ -33,6 +36,8 @@ type Action = {
     | 'update_content'
     | 'data_loading_start'
     | 'data_loading_done'
+    | 'quote_add'
+    | 'quote_clear'
   payload?: any
 }
 
@@ -80,6 +85,18 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         dataLoading: false,
+      }
+
+    case 'quote_add':
+      const { quote } = action.payload
+      return {
+        ...state,
+        quotes: [quote, ...state.quotes],
+      }
+    case 'quote_clear':
+      return {
+        ...state,
+        quotes: [],
       }
 
     default:
