@@ -181,23 +181,18 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
         <Tab eventKey="edit" title="Edit">
           <div className="vh-100">
             <div className="p-3 m-auto">
-              <div className="d-flex flex-column">
+              <div className="d-flex flex-column col-8 col-md-4 mx-auto">
                 {!previewUrl ? (
                   <Button onClick={() => fileInputRef.current?.click()} variant="secondary">
                     Add image...
                   </Button>
                 ) : (
-                  <>
-                    <img
-                      className="preview-image"
-                      src={previewUrl}
-                      width={200}
-                      alt="Image preview"
-                    ></img>
+                  <div className="d-flex flex-column">
+                    <img src={previewUrl} alt="Image preview"></img>
                     <Button onClick={clearPicture} variant="secondary">
                       Remove
                     </Button>
-                  </>
+                  </div>
                 )}
               </div>
 

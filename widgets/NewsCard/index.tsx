@@ -44,7 +44,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
         : ' (draft)')
   return (
     <Card>
-      {item.imageUrl && <Card.Img variant="top" src={item.imageUrl} />}
+      {item.imageUrl && (
+        <div className="col-8 col-md-4 my-3  mx-auto">
+          <Card.Img variant="top" src={item.imageUrl} />
+        </div>
+      )}
       <Card.Body>
         <Card.Title as="h3">{title}</Card.Title>
         <MyQuillReader

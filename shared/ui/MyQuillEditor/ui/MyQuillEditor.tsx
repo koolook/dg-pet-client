@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Button } from 'react-bootstrap'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
