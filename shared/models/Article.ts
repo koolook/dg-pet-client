@@ -1,3 +1,5 @@
+import { Attachment } from './Attachment'
+
 export interface Article {
   id: string
   author: string
@@ -7,4 +9,5 @@ export interface Article {
   content: string
   imageUrl?: string
   isPublished: boolean
+  attachments: Attachment[]
 }

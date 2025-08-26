@@ -4,10 +4,12 @@ import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
+import AttachmentsList from '@widgets/AttachmentsList'
 import { NewsCard } from '@widgets/NewsCard'
 
 import useContentData from '@shared/lib/hooks/useContentData'
 import { Article } from '@shared/models/Article'
+import { Attachment } from '@shared/models/Attachment'
 import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
 
 export interface ArticleEditorProps {
@@ -26,6 +28,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     isEditMode && article.imageUrl ? article.imageUrl : ''
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [pictureChosen, setPictureChosen] = useState(false)
   const [showOnDeleteModal, setShowOnDeleteModal] = useState(false)
 
@@ -35,6 +38,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const [isPublish, setIsPublish] = useState(!!article?.isPublished || !!article?.publishAt)
   const [isPublishAt, setIsPublishAt] = useState(!!article?.publishAt)
   const [publishAtDate, setPublishAtDate] = useState<Date | null>(article?.publishAt || new Date())
+  const [attachments, setAttachments] = useState(article?.attachments || [])
 
   const router = useRouter()
   const feedData = useContentData()
@@ -75,6 +79,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       formData.delete('coverImage')
     }
     formData.append('body', bodyText)
+    formData.append('attachments', JSON.stringify(attachments.map((a) => a.id)))
 
     formData.append('publish', isPublish.toString())
     if (isPublish && isPublishAt && publishAtDate) {
@@ -110,6 +115,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       }
     }
     formData.append('body', bodyText)
+    formData.append('attachments', JSON.stringify(attachments.map((a) => a.id)))
 
     formData.append('publish', isPublish.toString())
     if (isPublish && isPublishAt && publishAtDate) {
@@ -167,6 +173,11 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     }
   }
 
+  const handleAttachmentChange = (_attachments: Attachment[]) => {
+    console.log('Attachments: ' + JSON.stringify(attachments))
+    setAttachments(_attachments)
+  }
+
   return (
     <>
       <Tabs
@@ -195,6 +206,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   </div>
                 )}
               </div>
+              <div>
+                <label>Attachments</label>
+                <AttachmentsList
+                  attachments={attachments}
+                  onAttachmentsChange={handleAttachmentChange}
+                />
+              </div>
 
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="d-none mb-3" controlId="formPictureFile">
@@ -208,6 +226,19 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     ref={fileInputRef}
                   />
                 </Form.Group>
+                {/* <Form.Group className="mb-3" controlId="formAttachments">
+                  <Form.Label>Attachments</Form.Label>
+                  <Form.Control
+                    type="file"
+                    multiple
+                    accept='application/pdf, image/png, image/jpg, image/jpeg'
+                    onChange={handleAttachment}
+                    name="attachments[]"
+                    placeholder="Attach files"
+                    ref={attachmehtsRef}
+                  />
+                </Form.Group> */}
+
                 <Form.Group className="mb-3" controlId="formArticleTitle">
                   <Form.Label>Article Title</Form.Label>
                   <Form.Control

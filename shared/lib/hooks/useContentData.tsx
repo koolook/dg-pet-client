@@ -64,6 +64,7 @@ const useContentData = () => {
       author: item.author,
       createdAt: new Date(item.createdAt),
       isPublished: item.isPublished,
+      attachments: [],
     }
     if (item.imageUrl) {
       article.imageUrl = process.env.NEXT_PUBLIC_HOST_API + item.imageUrl
