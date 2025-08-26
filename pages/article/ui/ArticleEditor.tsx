@@ -206,16 +206,8 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   </div>
                 )}
               </div>
-              <div>
-                <label>Attachments</label>
-                <AttachmentsList
-                  attachments={attachments}
-                  onAttachmentsChange={handleAttachmentChange}
-                />
-              </div>
-
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="d-none mb-3" controlId="formPictureFile">
+              <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+                <Form.Group className="d-none" controlId="formPictureFile">
                   <Form.Label>Submit file</Form.Label>
                   <Form.Control
                     type="file"
@@ -226,20 +218,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     ref={fileInputRef}
                   />
                 </Form.Group>
-                {/* <Form.Group className="mb-3" controlId="formAttachments">
-                  <Form.Label>Attachments</Form.Label>
-                  <Form.Control
-                    type="file"
-                    multiple
-                    accept='application/pdf, image/png, image/jpg, image/jpeg'
-                    onChange={handleAttachment}
-                    name="attachments[]"
-                    placeholder="Attach files"
-                    ref={attachmehtsRef}
-                  />
-                </Form.Group> */}
-
-                <Form.Group className="mb-3" controlId="formArticleTitle">
+                <Form.Group controlId="formArticleTitle">
                   <Form.Label>Article Title</Form.Label>
                   <Form.Control
                     type="text"
@@ -249,11 +228,11 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     onChange={(e) => setTitleText(e.target.value)}
                   />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="formArticleBody">
+                <Form.Group controlId="formArticleBody">
                   <Form.Label>Article Body</Form.Label>
                   <MyQuillEditor value={bodyText} onChange={(value) => setBodyText(value)} />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="publishCheck">
+                <Form.Group controlId="publishCheck">
                   <Form.Check
                     type="checkbox"
                     label="Publish"
@@ -262,7 +241,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     onChange={(e) => setIsPublish(e.target.checked)}
                   />
                 </Form.Group>
-                <Form.Group className="mb-3 ms-3 d-flex flex-row gap-2 " controlId="publishDate">
+                <Form.Group className="ms-3 d-flex flex-row gap-2 " controlId="publishDate">
                   <Form.Check
                     type="checkbox"
                     label="Publish at:"
@@ -289,6 +268,14 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                     dateFormat="MMMM d, yyyy HH:mm"
                   />
                 </Form.Group>
+                <div>
+                  <label>Attachments</label>
+                  <AttachmentsList
+                    attachments={attachments}
+                    onAttachmentsChange={handleAttachmentChange}
+                  />
+                </div>
+
                 <div className="d-flex flex-row justify-content-start gap-2">
                   <Button variant="primary" type="submit" disabled={pending}>
                     Submit
@@ -310,9 +297,6 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
             </div>
           </div>
         </Tab>
-        {/* <Tab eventKey="quill" title="Quill">
-              <MyQuillEditor value={bodyText} onChange={onChangeQuill}/>
-        </Tab> */}
         <Tab eventKey="preview" title="Preview">
           <NewsCard
             item={{
@@ -320,6 +304,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
               imageUrl: previewUrl,
               content: bodyText,
               isPublished: isPublish,
+              attachments,
             }}
             isPreview={true}
           />

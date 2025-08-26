@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { Button, Card } from 'react-bootstrap'
+import { Button, Card, CardTitle } from 'react-bootstrap'
 
 import useContentData from '@shared/lib/hooks/useContentData'
 import useSession from '@shared/lib/hooks/useSession'
 import { Article } from '@shared/models/Article'
+import { Attachment } from '@shared/models/Attachment'
 import { MyQuillReader } from '@shared/ui/MyQuillReader'
 
 export interface NewsCardProps {
@@ -42,6 +43,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
       : item.publishAt
         ? ` (draft until ${item.publishAt.toLocaleString()})`
         : ' (draft)')
+
+  const handlePreview = (a: Attachment) => {
+    window.open(a.path)
+  }
+
   return (
     <Card>
       {item.imageUrl && (
@@ -57,6 +63,25 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
           onQuote={handleOnQuote}
         />
       </Card.Body>
+      {item.attachments && item.attachments.length > 0 && (
+        <>
+          <Card.Body className="d-flex flex-column">
+            <div>Attachments:</div>
+            {item.attachments?.map((a) => (
+              <a
+                href="#"
+                key={a.id}
+                onClick={(e) => {
+                  e.preventDefault()
+                  handlePreview(a)
+                }}
+              >
+                {a.name}
+              </a>
+            ))}
+          </Card.Body>
+        </>
+      )}
       <Card.Footer>
         <div className={footerClass}>
           <div className="d-flex flex-row gap-2">

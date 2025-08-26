@@ -4,6 +4,7 @@ import { StoreContext } from '@providers/StoreProvider'
 
 import { api } from '@shared/api/api'
 import { Article } from '@shared/models/Article'
+import { Attachment } from '@shared/models/Attachment'
 import { QuoteItem } from '@shared/models/QuoteItem'
 
 export interface ContentData {
@@ -57,6 +58,14 @@ const useContentData = () => {
   }
 
   const dataToArticle = (item: any) => {
+    const attachments =
+      item.attachments && Array.isArray(item.attachments)
+        ? (item.attachments as Attachment[]).map((a) => ({
+            ...a,
+            path: process.env.NEXT_PUBLIC_HOST_API + a.path,
+          }))
+        : []
+
     const article: Article = {
       id: item.id,
       title: item.title,
@@ -64,7 +73,7 @@ const useContentData = () => {
       author: item.author,
       createdAt: new Date(item.createdAt),
       isPublished: item.isPublished,
-      attachments: [],
+      attachments,
     }
     if (item.imageUrl) {
       article.imageUrl = process.env.NEXT_PUBLIC_HOST_API + item.imageUrl
