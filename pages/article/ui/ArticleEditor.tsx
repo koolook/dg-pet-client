@@ -16,7 +16,7 @@ export interface ArticleEditorProps {
   article?: Article
 }
 
-export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
+const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const isEditMode = !!article
 
   const thisDateTime = new Date()
@@ -327,3 +327,5 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     </>
   )
 }
+
+export default ArticleEditor

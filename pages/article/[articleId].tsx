@@ -6,7 +6,7 @@ import { Layout } from '@widgets/Layout/Layout'
 import useContentData from '@shared/lib/hooks/useContentData'
 import useSession from '@shared/lib/hooks/useSession'
 
-import { ArticleEditor } from './ui/ArticleEditor'
+import ArticleEditor from './ui/ArticleEditor'
 
 const Article = () => {
   const session = useSession()
