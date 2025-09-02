@@ -7,7 +7,9 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AttachmentsList from '@widgets/AttachmentsList'
 import { NewsCard } from '@widgets/NewsCard'
 
+import { asString } from '@shared/helpers'
 import useContentData from '@shared/lib/hooks/useContentData'
+import useError from '@shared/lib/hooks/useError'
 import { Article } from '@shared/models/Article'
 import { Attachment } from '@shared/models/Attachment'
 import { MyQuillEditor } from '@shared/ui/MyQuillEditor'
@@ -22,7 +24,6 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
   const thisDateTime = new Date()
 
   const [pending, setPending] = useState(false)
-  const [error, setError] = useState('')
   const [tab, setTab] = useState('edit')
   const [previewUrl, setPreviewUrl] = useState(
     isEditMode && article.imageUrl ? article.imageUrl : ''
@@ -42,6 +43,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
 
   const router = useRouter()
   const feedData = useContentData()
+  const errorHook = useError()
 
   const clearForm = () => {
     setTitleText('')
@@ -53,23 +55,21 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
     setShowOnDeleteModal(false)
   }
 
-  const onConfirmDelete = () => {
+  const onConfirmDelete = async () => {
     setPending(true)
     if (article?.id) {
-      feedData
-        .deleteById(article.id)
-        .then(() => {
-          router.push('/')
-        })
-        .catch((error) => {
-          setError('`Error deleting article: ' + error.message)
-          handleClose()
-          setPending(false)
-        })
+      try {
+        await feedData.deleteById(article.id)
+        router.push('/')
+      } catch (error) {
+        errorHook.setError('`Error deleting article: ' + asString(error))
+        handleClose()
+        setPending(false)
+      }
     }
   }
 
-  const handleCreateNew = (e: FormEvent) => {
+  const handleCreateNew = async (e: FormEvent) => {
     e.preventDefault()
     setPending(true)
 
@@ -86,20 +86,20 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       formData.append('publishAt', publishAtDate.valueOf().toString())
     }
 
-    feedData
-      .create(formData)
-      .then((id) => {
-        setPending(false)
-        clearForm()
-        router.push(`/#${id}`)
-      })
-      .catch(() => {
-        setPending(false)
-        setError(feedData.dataError)
-      })
+    try {
+      const id = await feedData.create(formData)
+      setPending(false)
+      clearForm()
+      router.push(`/#${id}`)
+    } catch (error) {
+      setPending(false)
+      const msg = asString(error)
+      console.log(msg)
+      errorHook.setError(`Error creating new Article: ${msg}`)
+    }
   }
 
-  const handleUpdate = (e: FormEvent) => {
+  const handleUpdate = async (e: FormEvent) => {
     if (!article) return
 
     e.preventDefault()
@@ -122,23 +122,21 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       formData.append('publishAt', publishAtDate.valueOf().toString())
     }
 
-    feedData
-      .update(article.id, formData)
-      .then(() => {
-        setPending(false)
-        router.push(`/#${article.id}`)
-      })
-      .catch(() => {
-        setPending(false)
-        setError(feedData.dataError)
-      })
+    try {
+      await feedData.update(article.id, formData)
+      setPending(false)
+      router.push(`/#${article.id}`)
+    } catch (error) {
+      setPending(false)
+      errorHook.setError(`Error updating Article ${article.id}: ${asString(error)}`)
+    }
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     if (isEditMode) {
-      handleUpdate(e)
+      await handleUpdate(e)
     } else {
-      handleCreateNew(e)
+      await handleCreateNew(e)
     }
   }
 
@@ -289,9 +287,14 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   </Button>
                 </div>
               </Form>
-              {error && (
-                <Alert className="mt-3" variant="danger" onClose={() => setError('')} dismissible>
-                  error
+              {errorHook.error && (
+                <Alert
+                  className="mt-3"
+                  variant="danger"
+                  onClose={() => errorHook.clearError()}
+                  dismissible
+                >
+                  {errorHook.error.message}
                 </Alert>
               )}
             </div>

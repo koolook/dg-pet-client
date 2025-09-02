@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useReducer } from 'react'
 
+import { ApplicationError } from '@shared/models/ApplicationError'
 import { Article } from '@shared/models/Article'
 import { QuoteItem } from '@shared/models/QuoteItem'
 
@@ -13,6 +14,7 @@ export interface State {
   contentData: Article[]
   dataLoading: boolean
   quotes: QuoteItem[]
+  error: ApplicationError | null
 }
 
 const initialState: State = {
@@ -25,6 +27,7 @@ const initialState: State = {
   contentData: [],
   dataLoading: false,
   quotes: [],
+  error: null,
 }
 
 type Action = {
@@ -38,6 +41,8 @@ type Action = {
     | 'data_loading_done'
     | 'quote_add'
     | 'quote_clear'
+    | 'set_error'
+    | 'clear_error'
   payload?: any
 }
 
@@ -99,12 +104,23 @@ function reducer(state: State, action: Action): State {
         quotes: [],
       }
 
+    case 'set_error':
+      const { severity, message } = action.payload
+      return {
+        ...state,
+        error: { severity, message },
+      }
+
+    case 'clear_error':
+      return {
+        ...state,
+        error: null,
+      }
+
     default:
       return { ...state }
   }
 }
-
-export const LocalContext = createContext(0)
 
 export const StoreContext = createContext<{
   state: State

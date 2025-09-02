@@ -10,7 +10,6 @@ import { QuoteItem } from '@shared/models/QuoteItem'
 export interface ContentData {
   data: Article[]
   dataLoading: boolean
-  dataError: string
   dataLoadingStart: () => {}
   dataLoadingDone: () => {}
   get: (id: string) => Article
@@ -28,7 +27,6 @@ export interface ContentData {
 
 const useContentData = () => {
   const { state, dispatch } = useContext(StoreContext)
-  const [dataError, setDataError] = useState('')
 
   const dataLoadingStart = () => {
     dispatch({ type: 'data_loading_start' })
@@ -91,7 +89,6 @@ const useContentData = () => {
       ({
         data: state.contentData,
         dataLoading: state.dataLoading,
-        dataError,
         // set,
         clear,
         // add: (data: Article[]) => {},
@@ -104,7 +101,6 @@ const useContentData = () => {
         },
 
         load: (ids?: string[]) => {
-          setDataError('')
           dataLoadingStart()
 
           const withBody = ids && Array.isArray(ids)
@@ -113,7 +109,6 @@ const useContentData = () => {
               set([...articles, ...(withBody ? state.contentData : [])])
             })
             .catch((error) => {
-              setDataError((error as any).message)
               throw error
             })
             .finally(() => {
@@ -122,7 +117,6 @@ const useContentData = () => {
         },
 
         deleteById: (id: string) => {
-          setDataError('')
           dataLoadingStart()
 
           return api
@@ -135,7 +129,6 @@ const useContentData = () => {
               }
             })
             .catch((error) => {
-              setDataError((error as any).message)
               throw error
             })
             .finally(() => {
@@ -144,7 +137,6 @@ const useContentData = () => {
         },
 
         create: (formData) => {
-          setDataError('')
           dataLoadingStart()
 
           return api
@@ -158,7 +150,6 @@ const useContentData = () => {
               return article.id
             })
             .catch((error) => {
-              setDataError((error as any).message)
               throw error
             })
             .finally(() => {
@@ -167,7 +158,6 @@ const useContentData = () => {
         },
 
         update: (id, formData) => {
-          setDataError('')
           dataLoadingStart()
 
           return api
@@ -186,7 +176,6 @@ const useContentData = () => {
               }
             })
             .catch((error) => {
-              setDataError((error as any).message)
               throw error
             })
             .finally(() => {

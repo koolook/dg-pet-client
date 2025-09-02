@@ -3,13 +3,14 @@ import { useEffect } from 'react'
 
 import { api } from '@shared/api/api'
 import useContentData from '@shared/lib/hooks/useContentData'
+import useError from '@shared/lib/hooks/useError'
 import useSession, { TOKEN_KEY } from '@shared/lib/hooks/useSession'
-import { Article } from '@shared/models/Article'
 
 const StartupWidget = () => {
   const session = useSession()
   const router = useRouter()
   const feedData = useContentData()
+  const errorHook = useError()
 
   useEffect(() => {
     if (!session.isAuthorized) {
@@ -24,6 +25,7 @@ const StartupWidget = () => {
             session.finishAuth()
           })
           .catch((error) => {
+            // Not actually an error. Just an Anonymous mode.
             session.logoff()
             session.finishAuth()
             router.push('/')
@@ -36,12 +38,19 @@ const StartupWidget = () => {
   }, [session.isAuthorized])
 
   useEffect(() => {
-    console.log('Startup effect 2')
+    const loadFeed = async () => {
+      if (session.isAuthDone) {
+        console.log('Loading feed...')
 
-    if (session.isAuthDone) {
-      console.log('... triggered')
-      void feedData.load()
+        try {
+          feedData
+          await feedData.load()
+        } catch (error) {
+          errorHook.setError((error as any).message, 'fatal')
+        }
+      }
     }
+    loadFeed()
   }, [session.isAuthorized, session.isAuthDone])
 
   return <></>
