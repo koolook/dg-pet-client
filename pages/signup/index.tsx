@@ -5,6 +5,8 @@ import { Button, Form } from 'react-bootstrap'
 import { Layout } from '@widgets/Layout/Layout'
 
 import { api } from '@shared/api/api'
+import { asString } from '@shared/helpers'
+import useError from '@shared/lib/hooks/useError'
 
 export const SignupForm = () => {
   const [userId, setUserId] = useState('')
@@ -12,38 +14,33 @@ export const SignupForm = () => {
   const [password2, setPassword2] = useState('')
   const [pending, setPending] = useState(false)
   const [signupComplete, setSignupComplete] = useState(false)
-  const [error, setError] = useState('')
+  const errorHook = useError()
 
   const clearForm = () => {
     setUserId('')
     setPassword('')
     setPassword2('')
-    setError('')
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     console.log(`user: ${userId} password: ${password}`)
 
     if (password !== password2) {
-      setError('Password does not match')
+      errorHook.setError('Password does not match')
       return
     }
 
     setPending(true)
 
-    api
-      .post('/auth/signup', { login: userId.trim(), password })
-      .then(() => {
-        // router.push('/')
-        setSignupComplete(true)
-      })
-      .catch((error) => {
-        setError(error.toJSON())
-      })
-      .finally(() => {
-        setPending(false)
-      })
+    try {
+      await api.post('/auth/signup', { login: userId.trim(), password })
+      setSignupComplete(true)
+    } catch (error) {
+      errorHook.setError(asString(error))
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
