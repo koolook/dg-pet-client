@@ -48,14 +48,14 @@ const useSession = (): Session => {
           },
         })
       },
-      logoff: () => {
+      logoff: async () => {
         localStorage.removeItem(TOKEN_KEY)
         localStorage.removeItem(USER_KEY)
 
         dispatch({
           type: 'logout',
         })
-        router.push('/')
+        await router.push('/')
       },
       finishAuth: () => {
         console.log('finishAuth')
