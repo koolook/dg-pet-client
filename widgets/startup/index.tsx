@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import { api } from '@shared/api/api'
+import { asString } from '@shared/helpers'
 import useContentData from '@shared/lib/hooks/useContentData'
 import useError from '@shared/lib/hooks/useError'
 import useSession, { TOKEN_KEY } from '@shared/lib/hooks/useSession'
@@ -46,7 +47,7 @@ const StartupWidget = () => {
           feedData
           await feedData.load()
         } catch (error) {
-          errorHook.setError((error as any).message, 'fatal')
+          errorHook.setError(asString(error), 'fatal')
         }
       }
     }

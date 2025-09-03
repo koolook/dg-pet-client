@@ -92,7 +92,7 @@ const AttachmentsList: React.FC<AttachmentsListProps> = ({ attachments, onAttach
           >
             Choose file
           </Button>
-{/*           <Button
+          {/*           <Button
             variant="outline-danger"
             onClick={handleDelete}
             disabled={selectedItems.length === 0}

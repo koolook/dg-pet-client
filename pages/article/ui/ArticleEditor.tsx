@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import React, { FormEvent, useRef, useState } from 'react'
-import { Alert, Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
+import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
@@ -128,7 +128,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
       router.push(`/#${article.id}`)
     } catch (error) {
       setPending(false)
-      errorHook.setError(`Error updating Article ${article.id}: ${asString(error)}`)
+      errorHook.setError(`Error updating Article: ${asString(error)}`)
     }
   }
 
@@ -287,16 +287,6 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article }) => {
                   </Button>
                 </div>
               </Form>
-              {errorHook.error && (
-                <Alert
-                  className="mt-3"
-                  variant="danger"
-                  onClose={() => errorHook.clearError()}
-                  dismissible
-                >
-                  {errorHook.error.message}
-                </Alert>
-              )}
             </div>
           </div>
         </Tab>
