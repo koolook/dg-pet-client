@@ -4,7 +4,6 @@ import React, { ReactNode } from 'react'
 import { Content, ContentProps } from '../Content'
 import { Header, HeaderOptions } from '../Header'
 
-import styles from './layout.module.scss'
 import { Analytics } from '@vercel/analytics/next'
 
 export type LayoutProps = {
