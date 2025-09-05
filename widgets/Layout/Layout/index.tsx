@@ -1,10 +1,10 @@
 import Head from 'next/head'
 import React, { ReactNode } from 'react'
 
+import { Analytics } from '@vercel/analytics/next'
+
 import { Content, ContentProps } from '../Content'
 import { Header, HeaderOptions } from '../Header'
-
-import { Analytics } from '@vercel/analytics/next'
 
 export type LayoutProps = {
   title?: string
@@ -20,7 +20,7 @@ export const Layout: React.FC<LayoutProps> & {
       <Head>
         <title>{title || ''}</title>
       </Head>
-      <Analytics/>
+      <Analytics />
       <div className="layout-container bg-secondary">{children}</div>
     </>
   )
