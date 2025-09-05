@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderOptions> = ({ canCreate = true }) => {
               </Button>
               {contentData.quotes?.length > 0 && (
                 <Button variant="secondary" onClick={() => contentData.clearQuotes()}>
-                  Clear quotes {contentData.quotes.length}
+                  Clear quotes ({contentData.quotes.length})
                 </Button>
               )}
             </>

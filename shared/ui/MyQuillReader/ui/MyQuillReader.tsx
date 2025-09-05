@@ -20,7 +20,7 @@ export const MyQuillReader: React.FC<ReaderProps> = ({ text, quoteTrigger, onQuo
       const selection = reader.getSelection()
       const index = selection && selection.length > 0 ? selection.index : 0
       const length = selection && selection.length > 0 ? selection.length : reader.getLength()
-      onQuote(reader.getSemanticHTML(index, length))
+      onQuote(reader.getText(index, length))
     }
   }, [quoteTrigger])
 
