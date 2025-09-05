@@ -105,7 +105,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({ item, isPreview = true }) =>
             )}
           </div>
           <div className="d-flex flex-row gap-2">
-            <div>{item.createdAt?.toLocaleString()}</div>
+            <div>
+              {item.updatedAt
+                ? '(updated) ' + item.updatedAt.toLocaleString()
+                : item.createdAt?.toLocaleString()}
+            </div>
             <div>{'by: ' + item.author}</div>
           </div>
         </div>

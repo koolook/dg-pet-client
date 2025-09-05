@@ -36,7 +36,13 @@ const useContentData = () => {
     dispatch({ type: 'data_loading_done' })
   }
 
+  const effectiveDate = (article: Article) =>
+    article.updatedAt ? article.updatedAt : article.createdAt
+  const compareFn = (a: Article, b: Article) =>
+    effectiveDate(b).valueOf() - effectiveDate(a).valueOf()
+
   const set = (data: Article[]) => {
+    data.sort(compareFn)
     dispatch({ type: 'update_content', payload: { contentData: data } })
   }
 
@@ -79,6 +85,10 @@ const useContentData = () => {
 
     if (item.publishAt) {
       article.publishAt = new Date(item.publishAt)
+    }
+
+    if (item.updatedAt) {
+      article.updatedAt = new Date(item.updatedAt)
     }
 
     return article
